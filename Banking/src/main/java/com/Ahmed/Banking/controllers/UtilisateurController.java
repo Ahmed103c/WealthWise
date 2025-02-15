@@ -1,5 +1,6 @@
 package com.Ahmed.Banking.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +27,9 @@ public class UtilisateurController {
 
     private final UtilisateurService service;
 
-    @PostMapping("/")    
-    public ResponseEntity<Integer> save(@RequestBody UtilisateurDto utilisateurDto)
-    {
-        return ResponseEntity.ok(service.save(utilisateurDto)); //si y a exception elle sera levé directement 
+    @PostMapping("/")
+    public ResponseEntity<Integer> save(@Valid @RequestBody UtilisateurDto utilisateurDto) {
+        return ResponseEntity.ok(service.save(utilisateurDto));
     }
 
     @GetMapping("/")
@@ -41,12 +41,12 @@ public class UtilisateurController {
     public ResponseEntity<UtilisateurDto> findById(@PathVariable("utilisateur-id") Integer id )
     {
         return ResponseEntity.ok(service.findById(id));
-    } 
+    }
 
     @DeleteMapping("/{utilisateur-id}")
     public ResponseEntity<UtilisateurDto> delete(@PathVariable("utilisateur-id") Integer id )
     {
         service.delete(id);
         return ResponseEntity.accepted().build();
-    } 
+    }
 }
