@@ -1,5 +1,7 @@
 package com.Ahmed.Banking.services;
 
+import com.Ahmed.Banking.dto.TransactionDto;
+
 import java.util.List;
 
 public interface AbstractService<T> {
