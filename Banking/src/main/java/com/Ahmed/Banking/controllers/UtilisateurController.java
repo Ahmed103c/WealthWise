@@ -49,7 +49,7 @@ public class UtilisateurController {
             UtilisateurDto utilisateur = service.findByMail(email);
 
             // Vérifier le mot de passe (ici, tu devras adapter selon ta logique de validation du mot de passe)
-            if (isPasswordValid(password, utilisateur.getPassword())) {
+            if (isPasswordValid(password, utilisateur.getMotDePasse())) {
                 // Si le mot de passe est valide, retourner un succès
                 return ResponseEntity.ok("Login successful");
             } else {

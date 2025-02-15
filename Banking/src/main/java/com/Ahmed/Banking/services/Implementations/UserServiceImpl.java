@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,14 +70,10 @@ public class UserServiceImpl implements UtilisateurService  {
     @Override
     public void delete(Integer id) {
         repository.deleteById(id);
-
-    @Override
+    }
     public UtilisateurDto findByMail(String email) {
-        return repository.findByEmail(email)  // Assure-toi que la méthode `findByEmail` existe dans le repository.
+        return repository.findByEmail(email)
                 .map(UtilisateurDto::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("No user was found with the provided email: " + email));
     }
-
-
-
-    }
+}
