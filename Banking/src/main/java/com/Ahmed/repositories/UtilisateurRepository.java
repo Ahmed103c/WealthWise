@@ -12,6 +12,7 @@ import com.Ahmed.Banking.models.Utilisateur;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur,Integer> 
 {
+    Optional<Utilisateur> findByEmail(String email);
     /* 
     // SELECT * FROM UTILISATEURS WHERE nom = 'Rzeigui';
     List<Utilisateur> findAllByNom(String nom);

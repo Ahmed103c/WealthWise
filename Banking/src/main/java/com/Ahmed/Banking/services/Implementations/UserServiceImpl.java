@@ -68,6 +68,14 @@ public class UserServiceImpl implements UtilisateurService  {
     @Override
     public void delete(Integer id) {
         repository.deleteById(id);
+
+    @Override
+    public UtilisateurDto findByMail(String email) {
+        return repository.findByEmail(email)  // Assure-toi que la méthode `findByEmail` existe dans le repository.
+                .map(UtilisateurDto::fromEntity)
+                .orElseThrow(() -> new EntityNotFoundException("No user was found with the provided email: " + email));
     }
 
-}
+
+
+    }
