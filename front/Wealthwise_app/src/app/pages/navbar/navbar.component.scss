@@ -1,0 +1,163 @@
+/* Importation de la police */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+i {
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #150016, #29104A, #522C5D, #845162, #E3B6B1);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px 0;
+}
+
+.nav-links {
+  list-style: none;
+  padding-top: 20px;
+}
+
+.nav-links li {
+  margin: 20px 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.nav-links a i {
+  width: 30px;
+  text-align: center;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* Effet au survol */
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+/* Effet actif */
+.nav-links a.active {
+  background: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+.top-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  position: fixed;
+  top: 0;
+  left: 250px; // Ajuste avec la sidebar
+  width: calc(100% - 250px);
+  z-index: 1000;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+.profile i {
+  font-size: 40px; // Taille de l’avatar
+  color: #522C5D;
+  cursor: pointer;
+}
+
+.profile i:hover {
+  color: #29104A;
+}
+
+.left h2 {
+  font-size: 22px;
+  color: #333;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Style du bouton Aide */
+.help-btn {
+  background: none;
+  border: none;
+  font-size: 40px;
+  cursor: pointer;
+  color: #522C5D;
+}
+
+.help-btn:hover {
+  color: #29104A;
+}
+
+/* Style du profil */
+.profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #845162;
+  cursor: pointer;
+}
+
+/* Bouton Logout */
+.logout-btn {
+  background: #522C5D;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.logout-btn i {
+  font-size: 16px;
+}
+
+.logout-btn:hover {
+  background: #29104A;
+}
+
