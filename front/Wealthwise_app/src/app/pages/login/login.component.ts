@@ -37,6 +37,9 @@ export class LoginComponent {
       }
     });
   }
+  goToRegister() {
+    this.router.navigate(['/register']);  // ✅ Redirection vers la page d'inscription
+  }
 }
 
 

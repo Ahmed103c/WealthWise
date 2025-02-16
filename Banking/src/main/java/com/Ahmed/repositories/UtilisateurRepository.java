@@ -14,6 +14,10 @@ import com.Ahmed.Banking.models.Utilisateur;
 public interface UtilisateurRepository extends JpaRepository<Utilisateur,Integer> 
 {
     Optional<Utilisateur> findByEmail(String email);
+    @Query("SELECT COUNT(u) > 0 FROM Utilisateur u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
+    @Query("SELECT COALESCE(MAX(u.id), 0) FROM Utilisateur u")
+    Integer findMaxId();
     /* 
     // SELECT * FROM UTILISATEURS WHERE nom = 'Rzeigui';
     List<Utilisateur> findAllByNom(String nom);

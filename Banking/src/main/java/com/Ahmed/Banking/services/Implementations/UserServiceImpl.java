@@ -3,6 +3,7 @@ package com.Ahmed.Banking.services.Implementations;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 
 
@@ -41,16 +42,22 @@ public class UserServiceImpl implements UtilisateurService  {
 
 
     @Override
-    public Integer save(UtilisateurDto dto) {
-        //le gestionaire globale va gérer l'exception si elle est levé 
-        validator.validate(dto);
-        
-        Utilisateur utilisateur = UtilisateurDto.toEntity(dto);
-        Utilisateur savedUtilisateur = repository.save(utilisateur); // cette méthode existe déja fil jpa repository
- 
+    public Integer save(UtilisateurDto utilisateurDto) {
+        // Vérifier si un utilisateur avec le même email existe déjà
+        if (repository.findByEmail(utilisateurDto.getEmail()).isPresent()) {
+            throw new RuntimeException("Un utilisateur avec cet email existe déjà !");
+        }
 
-        return savedUtilisateur.getId();
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(utilisateurDto.getNom());
+        utilisateur.setPrenom(utilisateurDto.getPrenom());
+        utilisateur.setEmail(utilisateurDto.getEmail());
+        utilisateur.setMotDePasse(utilisateurDto.getMotDePasse());
+
+        // Sauvegarde l'utilisateur et retourne son ID
+        return repository.save(utilisateur).getId();
     }
+
 
     @Override
     public List<UtilisateurDto> findAll() {
@@ -76,4 +83,8 @@ public class UserServiceImpl implements UtilisateurService  {
                 .map(UtilisateurDto::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("No user was found with the provided email: " + email));
     }
+    public boolean emailExists(String email) {
+        return repository.findByEmail(email).isPresent();
+    }
+
 }

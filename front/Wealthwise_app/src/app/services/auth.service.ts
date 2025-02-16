@@ -26,6 +26,22 @@ export class AuthService {
 
     return this.http.post<{ token: string }>(url, body.toString(), { headers });
   }
+  register(nom: string, prenom: string, email: string, motDePasse: string): Observable<number> {
+    const url = `${this.apiUrl}/`; // URL du backend
+
+    const body = {
+      nom: nom,
+      prenom: prenom,
+      email: email,
+      motDePasse: motDePasse
+    };
+
+    console.log("🚀 Envoi de la requête de register à :", url);
+    console.log("📤 Données envoyées :", body);
+
+    return this.http.post<number>(url, body);
+  }
+
 
 
   storeToken(token: string): void {
