@@ -1,0 +1,23 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Dashboard</h2>
+    <nav>
+      <ul>
+        <li><a routerLink="/dashboard/home" routerLinkActive="active">🏠 Accueil</a></li>
+        <li><a routerLink="/dashboard/profile" routerLinkActive="active">👤 Profil</a></li>
+        <li><a routerLink="/dashboard/settings" routerLinkActive="active">⚙️ Paramètres</a></li>
+        <li (click)="logout()">🚪 Déconnexion</li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header>
+      <h1>Bienvenue dans le Dashboard</h1>
+    </header>
+
+  </div>
+</div>
+
