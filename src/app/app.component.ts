@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LoginComponent } from "./pages/login/login.component";
-import { RegisterComponent } from "./pages/register/register.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LoginComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  template: `<router-outlet></router-outlet>`,
+  imports: [RouterOutlet] // ❌ Supprime LoginComponent et RegisterComponent ici
 })
 export class AppComponent {
-  title = 'Wealthwise_app';
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
 }

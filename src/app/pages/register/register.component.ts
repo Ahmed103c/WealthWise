@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [],
+  standalone: true,
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
-  standalone: true
-})
-export class RegisterComponent {
+  styleUrls: ['./register.component.scss']  ,// ✅ Correction ici,
+  imports: [RouterModule]
 
-}
+})
+export class RegisterComponent {}
