@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> merging
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -91,6 +94,7 @@ baseline.json
 
 # Ignore cache created with the Angular CLI.
 .angular/
+<<<<<<< HEAD
 =======
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
@@ -136,3 +140,5 @@ testem.log
 Thumbs.db
 front/Wealthwise_app/.angular/cache/
 >>>>>>> mayssafront
+=======
+>>>>>>> merging
