@@ -1,34 +1,29 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // ✅ Pour `ngModel`
+import { CommonModule } from '@angular/common'; // ✅ Pour `*ngIf`
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  standalone: true, // ✅ Angular 19 standalone component
+  imports: [FormsModule, CommonModule] // ✅ Ajout de `FormsModule` et `CommonModule`
 })
+
 export class LoginComponent {
   email = '';
   password = '';
-  erreur: string = '';
+  errorMessage = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  login() {
-    this.authService.login({ email: this.email, password: this.password }).subscribe(
-      (response: any)=> {
-        console.log('Connexion réussie');
-      },
-      (error:any ) => {
-        console.error('Échec de l\'authentification');
-      }
-    );
+  
+  goToRegister() {
+    this.router.navigate(['/register']);  // ✅ Redirection vers la page d'inscription
   }
 }
-
 
 
 

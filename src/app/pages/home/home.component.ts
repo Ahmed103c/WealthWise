@@ -1,33 +1,21 @@
 import { Component } from '@angular/core';
-import { trigger, style, animate, transition } from '@angular/animations';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'app-home',
-  imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  animations: [
-    trigger('fadeIn', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('0.8s ease-in', style({ opacity: 1 }))
-      ])
-    ]),
-    trigger('buttonScale', [
-      transition(':enter', [
-        style({ transform: 'scale(0.8)' }),
-        animate('0.3s ease-out', style({ transform: 'scale(1)' }))
-      ])
-    ]),
-    trigger('slideInRight', [
-      transition(':enter', [
-        style({ transform: 'translateX(100%)', opacity: 0 }),
-        animate('0.5s ease-out', style({ transform: 'translateX(0)', opacity: 1 }))
-      ])
-    ])
-  ]
+  imports: [RouterModule]
 })
-export class HomeComponent {}
+export class HomeComponent {
+  features = [
+    { icon: '🔐', title: 'Connexion Sécurisée', description: 'Intégrez facilement vos comptes bancaires en toute sécurité.' },
+    { icon: '📊', title: 'Suivi Automatisé', description: 'Suivez vos dépenses et revenus en temps réel.' },
+    { icon: '💳', title: 'Gestion Multi-Comptes', description: 'Regroupez toutes vos finances en un seul endroit.' },
+    { icon: '📈', title: 'Rapports Dynamiques', description: 'Analysez vos finances avec des graphiques interactifs.' }
+  ];
+
+  startNow() {
+    alert("Redirection vers l'inscription...");
+  }
+}
