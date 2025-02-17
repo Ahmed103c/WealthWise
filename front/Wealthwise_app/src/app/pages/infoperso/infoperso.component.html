@@ -1,0 +1,53 @@
+<div class="info-page">
+    <div class="info-section">
+      <div class="info-row">
+        <label>Nom complet :</label>
+        <p *ngIf="!editMode['fullName']">{{ user.fullName }}</p>
+        <input *ngIf="editMode['fullName']" type="text" [(ngModel)]="user.fullName" />
+        <button class="edit-btn" (click)="toggleEdit('fullName')">Modifier</button>
+      </div>
+
+      <div class="info-row">
+        <label>Email :</label>
+        <p *ngIf="!editMode['email']">{{ user.email }}</p>
+        <input *ngIf="editMode['email']" type="email" [(ngModel)]="user.email" />
+        <button class="edit-btn" (click)="toggleEdit('email')">Modifier</button>
+      </div>
+
+      <div class="info-row">
+        <label>Téléphone :</label>
+        <p *ngIf="!editMode['phone']">{{ user.phone }}</p>
+        <input *ngIf="editMode['phone']" type="text" [(ngModel)]="user.phone" />
+        <button class="edit-btn" (click)="toggleEdit('phone')">Modifier</button>
+      </div>
+    </div>
+
+
+  <div class="info-section">
+    <div class="info-row">
+      <label>Type de compte :</label>
+      <p>{{ user.accountType }}</p>
+    </div>
+
+    <div class="info-row">
+      <label>Solde :</label>
+      <p>{{ user.balance | currency:'EUR' }}</p>
+    </div>
+
+    <div class="info-row">
+      <label>IBAN :</label>
+      <p>{{ user.iban }}</p>
+    </div>
+
+    <div class="info-row">
+      <label>Vérification :</label>
+      <p [class.verified]="user.verified" [class.not-verified]="!user.verified">
+        {{ user.verified ? '✔️ Vérifié' : '❌ Non vérifié' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button class="save-btn" (click)="saveChanges()">Enregistrer les modifications</button>
+  </div>
+</div>
