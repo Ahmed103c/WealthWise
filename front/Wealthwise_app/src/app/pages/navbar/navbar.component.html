@@ -10,7 +10,8 @@
 </div>
 <nav class="top-navbar">
   <div class="left">
-    <h2>Bonjour Username</h2>
+    <p *ngIf="userEmail">👋 Bonjour, {{ userEmail }} !</p>
+    <p *ngIf="!userEmail">Chargement...</p>
   </div>
 
   <div class="right">

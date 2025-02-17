@@ -25,7 +25,7 @@ export class LoginComponent {
         console.log("✅ Réponse reçue :", response); // ✅ Vérifier le token reçu
 
         if (response && response.token) {
-          localStorage.setItem('token', response.token); // ✅ Stocker le token
+          this.authService.storeToken(response.token); // ✅ Stocker le token
           this.router.navigate(['/dashboard']); // ✅ Rediriger vers le dashboard
         } else {
           this.errorMessage = "Réponse invalide du serveur";

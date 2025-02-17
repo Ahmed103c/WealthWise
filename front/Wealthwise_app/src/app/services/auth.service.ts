@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -41,16 +44,35 @@ export class AuthService {
 
     return this.http.post<number>(url, body);
   }
-
+  getEmailFromToken(): string | null {
+    const token = this.getToken();
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);  // Utilisation correcte de jwtDecode
+        console.log("🔹 Token décodé :", decoded);
+        return decoded.sub || null;
+      } catch (error) {
+        console.error("❌ Erreur lors du décodage du token :", error);
+        return null;
+      }
+    }
+    return null;
+  }
 
 
   storeToken(token: string): void {
+    console.log("📥 Stockage du token dans localStorage :", token);
     localStorage.setItem(this.tokenKey, token);
   }
 
+
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    console.log("🔹 Token récupéré depuis le localStorage :", token);
+    return token;
   }
+
+
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
