@@ -1,42 +1,45 @@
 package com.Ahmed.Banking.models;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.Builder;
-import lombok.Data;
-
+/**
+ * Entité Transaction, stockée en BDD.
+ * L'ID est de type Integer et auto-généré.
+ */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Table(name = "transaction") // Nom de table si besoin
 public class Transaction {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // ou sequence
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType type;
+    private BigDecimal amount;
 
-    @CreatedDate
-    @Column(
-        nullable = false,
-        updatable = false
-    )
-    private LocalDateTime creationDate;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type; // "TRANSFER", "DEPOSIT", ...
+
+    private LocalDate transactionDate;
 
     @ManyToOne
-    @JoinColumn(name="id_compte")
+    @JoinColumn(name = "compte_id")
     private Compte compte;
 
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private RecurrenceFrequency recurrenceFrequency;
+
+    private LocalDate recurrenceEnd;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

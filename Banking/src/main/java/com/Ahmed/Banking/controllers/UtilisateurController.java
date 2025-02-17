@@ -1,11 +1,12 @@
 package com.Ahmed.Banking.controllers;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.Ahmed.Banking.dto.UtilisateurDto;
 import com.Ahmed.Banking.services.UtilisateurService;
-import com.Ahmed.Banking.security.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
@@ -17,7 +18,16 @@ import org.springframework.http.MediaType;
 
 
 import java.util.List;
-@Tag(name = "Utilisateur", description = "Endpoints pour la gestion des utilisateurs")
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+
+
+
 @RestController
 @RequestMapping("/utilisateurs")
 @RequiredArgsConstructor
@@ -30,9 +40,8 @@ public class UtilisateurController {
     private UtilisateurService service;  // Injection de ton service utilisateur
 
     @PostMapping("/")
-    public ResponseEntity<Integer> save(@RequestBody UtilisateurDto utilisateurDto)
-    {
-        return ResponseEntity.ok(service.save(utilisateurDto)); //si y a exception elle sera levée directement
+    public ResponseEntity<Integer> save(@Valid @RequestBody UtilisateurDto utilisateurDto) {
+        return ResponseEntity.ok(service.save(utilisateurDto));
     }
 
     @GetMapping("/")
@@ -48,7 +57,7 @@ public class UtilisateurController {
     }
 
     @DeleteMapping("/{utilisateur-id}")
-    public ResponseEntity<Void> delete(@PathVariable("utilisateur-id") Integer id )
+    public ResponseEntity<UtilisateurDto> delete(@PathVariable("utilisateur-id") Integer id )
     {
         service.delete(id);
         return ResponseEntity.accepted().build();
@@ -89,4 +98,3 @@ public class UtilisateurController {
         return inputPassword.equals(storedPassword);  // Remplace par la méthode de validation adéquate (par exemple, BCrypt)
     }
 }
-

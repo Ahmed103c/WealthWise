@@ -16,28 +16,22 @@ import lombok.Setter;
 @Builder
 public class UtilisateurDto {
 
-    @NotNull
-    @NotEmpty
-    @NotBlank(message = "Nom_is_Blank ! ")
+    @NotBlank(message = "Le nom ne peut pas être vide.")
     private String nom;
-    @NotNull
-    @NotEmpty
-    @NotBlank
+
+    @NotBlank(message = "Le prénom ne peut pas être vide.")
     private String prenom;
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    @Email
+
+    @NotBlank(message = "L'email ne peut pas être vide.")
+    @Email(message = "Format d'email invalide.")
     private String email;
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    @Size(min=8,max=16)
+
+    @NotBlank(message = "Le mot de passe ne peut pas être vide.")
+    @Size(min = 8, max = 16, message = "Le mot de passe doit contenir entre 8 et 16 caractères.")
     private String motDePasse;
 
-    //transformation userEntity ---> userDto
-    public static UtilisateurDto fromEntity(Utilisateur utilisateur)
-    {
+    // Convert Entity to DTO
+    public static UtilisateurDto fromEntity(Utilisateur utilisateur) {
         return UtilisateurDto.builder()
                 .nom(utilisateur.getNom())
                 .prenom(utilisateur.getPrenom())
@@ -46,14 +40,13 @@ public class UtilisateurDto {
                 .build();
     }
 
-    //transformation userDto ---> userEntity
-    public static Utilisateur toEntity(UtilisateurDto utilisateur)
-    {
+    // Convert DTO to Entity
+    public static Utilisateur toEntity(UtilisateurDto dto) {
         return Utilisateur.builder()
-                .nom(utilisateur.getNom())
-                .prenom(utilisateur.getPrenom())
-                .email(utilisateur.getEmail())
-                .motDePasse(utilisateur.getMotDePasse())
+                .nom(dto.getNom())
+                .prenom(dto.getPrenom())
+                .email(dto.getEmail())
+                .motDePasse(dto.getMotDePasse())
                 .build();
     }
 }
