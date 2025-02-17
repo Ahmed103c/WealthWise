@@ -3,7 +3,7 @@
 
     <div class="container">
         <div class="form-box login">
-            <form (submit)="onLogin()">
+            <form >
                 <h1>Login</h1>
                 <div class="input-box">
                   <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
@@ -25,7 +25,7 @@
             <div class="overlay-panel">
                 <h2>First Time?</h2>
                 <p>Don't have an account?</p>
-                <button class="btn" id="register-btn" (click)="goToRegister()">Register</button>
+                
             </div>
         </div>
     </div>

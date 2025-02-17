@@ -19,7 +19,7 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  
+ 
   goToRegister() {
     this.router.navigate(['/register']);  // ✅ Redirection vers la page d'inscription
   }
