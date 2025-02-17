@@ -16,7 +16,7 @@ public class Compte {
     private String externalId;  // The ID from the bank API
     private String institution;
     private String iban;
-    private String currency;
+    private String currency="EUR";
     private Double balance;
 
     @ManyToOne

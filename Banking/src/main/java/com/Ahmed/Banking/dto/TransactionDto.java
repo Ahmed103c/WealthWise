@@ -38,7 +38,7 @@ public class TransactionDto {
 
     private Integer categoryId;
 
-    // ✅ Conversion d'une entité `Transaction` en `TransactionDto`
+    // ✅ Conversion d'une entité Transaction en TransactionDto
     public static TransactionDto fromEntity(Transaction transaction) {
         return TransactionDto.builder()
                 .id(transaction.getId())
@@ -53,7 +53,7 @@ public class TransactionDto {
                 .build();
     }
 
-    // ✅ Conversion d'un `TransactionDto` en une entité `Transaction`
+    // ✅ Conversion d'un TransactionDto en une entité Transaction
     public static Transaction toEntity(TransactionDto dto) {
         Transaction transaction = new Transaction();
         transaction.setId(dto.getId());
