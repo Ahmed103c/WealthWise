@@ -1,0 +1,28 @@
+<div class="info-page">
+    <h2>💰 Suivi du Budget</h2>
+
+    <div class="info-section">
+        <h3>Budget Total (€)</h3>
+        <input type="number" [(ngModel)]="budgetTotal" (input)="mettreAJourConseils()" placeholder="Entrez votre budget total">
+        <p class="conseils">{{ conseils }}</p>
+    </div>
+
+    <div class="info-section">
+        <h3>Catégories</h3>
+        <button class="save-btn" (click)="ajouterCategorie()">➕ Ajouter une Catégorie</button>
+
+        <div *ngFor="let categorie of categories; let i = index" class="info-row">
+            <label>Catégorie :</label>
+            <input type="text" [(ngModel)]="categorie.nom" placeholder="Nom">
+            <input type="number" [(ngModel)]="categorie.montant" placeholder="Budget (€)" (input)="mettreAJourConseils()">
+            <button class="save-btn" (click)="supprimerCategorie(i)">❌</button>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Progression</h3>
+        <div class="progress-bar" [style.width.%]="calculerProgression()" [style.backgroundColor]="'#845162'"></div>
+    </div>
+
+    <button class="save-btn" (click)="sauvegarderBudget()">💾 Sauvegarder</button>
+</div>
