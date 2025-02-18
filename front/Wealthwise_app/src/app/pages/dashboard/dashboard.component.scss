@@ -1,0 +1,45 @@
+.dashboard-widgets-container {
+  margin-left: 250px; /* Décale le box à gauche de 105px */
+  margin-right: 10px;
+  padding: 0; /* Ajoute de l'espace autour des widgets à l'intérieur du box */
+  box-sizing: border-box; /* Inclut le padding dans les dimensions du box */
+  border-radius: 16px; /* Ajoute un arrondi aux bords du box */
+}
+.dashboard-widgets {
+  margin-top: 105px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.dashboard-widgets > app-widget {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Par défaut, tous les widgets prennent 1 ligne et 1 colonne */
+.dashboard-widgets > app-widget {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* 5ème élément : 2 rows, 2 columns */
+.dashboard-widgets > app-widget:nth-child(5) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* 5ème élément : 2 rows, 2 columns */
+.dashboard-widgets > app-widget:nth-child(6) {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+/* 6ème élément : 1 row, 2 columns */
+.dashboard-widgets > app-widget:nth-child(7) {
+  grid-column: span 2;
+  grid-row: span 3;
+}
+/* 8ème élément : 3 rows, 2 columns */
+.dashboard-widgets > app-widget:nth-child(8) {
+  grid-column: span 2;
+  grid-row: span 2;
+}

@@ -1,0 +1,45 @@
+.widget {
+  margin-left: 20px;
+  box-sizing: border-box;
+  //   width: calc(100% - 250px);
+
+  padding: 20px;
+  //   overflow: auto; /* Permet le scroll si le contenu dépasse */
+  overflow: hidden; //if the contnent is more than the widget itself it dosen't affect the container
+}
+.widget {
+  background-color: #fff; /* Fond blanc */
+  border-radius: 8px; /* Coins arrondis */
+  padding: 20px; /* Espacement intérieur */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère pour donner du relief */
+  transition: all 0.3s ease-in-out; /* Transition pour les effets de hover */
+  transform: scale(1); /* Taille de base */
+}
+
+/* Effet au survol du widget */
+.widget:hover {
+  transform: scale(1.05); /* Agrandissement légèrement au survol */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+  background-color: #f9f9f9; /* Fond clair lorsqu'on survole */
+}
+
+/* Animation pour l'apparition du widget avec une légère translation */
+
+/* Animation : apparaître avec une translation vers le haut */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Déplacer vers le bas au départ */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Position finale */
+  }
+}
+
+/* Effet de focus ou lorsque l'élément reçoit un clic */
+.widget:focus {
+  outline: none; /* Enlever le contour par défaut du focus */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Ombre plus large */
+  border: 2px solid #3498db; /* Ajouter une bordure bleue */
+}

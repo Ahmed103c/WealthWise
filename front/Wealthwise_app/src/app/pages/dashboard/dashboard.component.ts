@@ -1,14 +1,23 @@
-import { Component } from '@angular/core';
-import {Router, RouterLinkActive,RouterModule} from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLinkActive, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
+import { WidgetComponent } from '../../components/widget/widget.component';
+import { Wigdet } from '../../models/dashboardWidget';
+import { DashboardService } from '../../services/dashboardService/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [CommonModule, RouterLinkActive,RouterModule],
-  standalone: true
+  providers: [DashboardService],
+  imports: [CommonModule, RouterLinkActive, RouterModule, WidgetComponent],
+  standalone: true,
 })
-export class DashboardComponent{}
-
+export class DashboardComponent {
+  // data: Wigdet = {
+  //   id: 1,
+  //   label: 'Subscribers',
+  //   content: SubscribersComponent,
+  // };
+  store = inject(DashboardService);
+}
