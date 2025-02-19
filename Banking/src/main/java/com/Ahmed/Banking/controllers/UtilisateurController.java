@@ -14,6 +14,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import com.Ahmed.Banking.models.Utilisateur;
+import com.Ahmed.Banking.models.Compte;
+import com.Ahmed.Banking.security.JwtTokenProvider;
+import org.springframework.web.bind.annotation.RequestHeader;
+import java.util.List;
+
 
 
 import java.util.List;
@@ -62,7 +70,7 @@ public class UtilisateurController {
             @Parameter(description = "Mot de passe de l'utilisateur", required = true) @RequestParam String password) {
 
         try {
-            UtilisateurDto utilisateur = service.findByMail(email);
+            Utilisateur utilisateur = service.findByMail(email);
 
             if (utilisateur != null && isPasswordValid(password, utilisateur.getMotDePasse())) {
                 String token = jwtTokenProvider.generateToken(email);
@@ -85,4 +93,39 @@ public class UtilisateurController {
         // Utiliser par exemple BCrypt pour comparer le mot de passe
         return inputPassword.equals(storedPassword);  // Remplace par la méthode de validation adéquate (par exemple, BCrypt)
     }
+    @GetMapping("/profil")
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String authorizationHeader) {
+        System.out.println("🔹 Header Authorization reçu : " + authorizationHeader);
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("❌ Token manquant ou invalide");
+        }
+
+        String token = authorizationHeader.replace("Bearer ", "");
+        String email = jwtTokenProvider.getUsernameFromToken(token);
+
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("❌ Impossible d'extraire l'email du token");
+        }
+
+        // 🔹 Récupération de l'utilisateur en DTO (pour respecter `findByMail`)
+        Utilisateur utilisateur = service.findByMail(email);
+        System.out.println("🔹 Utilisateur trouvé : " + utilisateur);
+        System.out.println("🔹 ID de l'utilisateur : " + utilisateur.getId());
+
+        // 🔹 Récupération des comptes liés
+        List<Compte> comptes = service.getComptesByUserId(utilisateur.getId());
+
+        // 🔹 Création de l'objet JSON de réponse
+        Map<String, Object> response = new HashMap<>();
+        response.put("nom", utilisateur.getNom());
+        response.put("prenom", utilisateur.getPrenom());
+        response.put("email", utilisateur.getEmail());
+        response.put("comptes", comptes);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
 }

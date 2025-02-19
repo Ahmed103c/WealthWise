@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 @Data
@@ -29,8 +31,5 @@ public class Utilisateur {
     private String email;
     private String motDePasse;
 
-
-    @OneToMany(mappedBy = "utilisateur")
-    private List<Compte> comptes;
     
 }

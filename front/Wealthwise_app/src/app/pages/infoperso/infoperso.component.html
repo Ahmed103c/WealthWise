@@ -1,50 +1,64 @@
 <div class="info-page">
-    <div class="info-section">
-      <div class="info-row">
-        <label>Nom complet :</label>
-        <p *ngIf="!editMode['fullName']">{{ user.fullName }}</p>
-        <input *ngIf="editMode['fullName']" type="text" [(ngModel)]="user.fullName" />
-        <button class="edit-btn" (click)="toggleEdit('fullName')">Modifier</button>
-      </div>
-
-      <div class="info-row">
-        <label>Email :</label>
-        <p *ngIf="!editMode['email']">{{ user.email }}</p>
-        <input *ngIf="editMode['email']" type="email" [(ngModel)]="user.email" />
-        <button class="edit-btn" (click)="toggleEdit('email')">Modifier</button>
-      </div>
-
-      <div class="info-row">
-        <label>Téléphone :</label>
-        <p *ngIf="!editMode['phone']">{{ user.phone }}</p>
-        <input *ngIf="editMode['phone']" type="text" [(ngModel)]="user.phone" />
-        <button class="edit-btn" (click)="toggleEdit('phone')">Modifier</button>
-      </div>
-    </div>
-
 
   <div class="info-section">
     <div class="info-row">
-      <label>Type de compte :</label>
-      <p>{{ user.accountType }}</p>
+      <label>Nom :</label>
+      <p *ngIf="!editMode['nom']">{{ user.nom }}</p>
+      <input *ngIf="editMode['nom']" type="text" [(ngModel)]="user.nom" />
+      <button class="edit-btn" (click)="toggleEdit('nom')">Modifier</button>
     </div>
 
     <div class="info-row">
-      <label>Solde :</label>
-      <p>{{ user.balance | currency:'EUR' }}</p>
+      <label>Prénom :</label>
+      <p *ngIf="!editMode['prenom']">{{ user.prenom }}</p>
+      <input *ngIf="editMode['prenom']" type="text" [(ngModel)]="user.prenom" />
+      <button class="edit-btn" (click)="toggleEdit('prenom')">Modifier</button>
     </div>
 
     <div class="info-row">
-      <label>IBAN :</label>
-      <p>{{ user.iban }}</p>
+      <label>Email :</label>
+      <p *ngIf="!editMode['email']">{{ user.email }}</p>
+      <input *ngIf="editMode['email']" type="email" [(ngModel)]="user.email" />
+      <button class="edit-btn" (click)="toggleEdit('email')">Modifier</button>
     </div>
 
-    <div class="info-row">
-      <label>Vérification :</label>
-      <p [class.verified]="user.verified" [class.not-verified]="!user.verified">
-        {{ user.verified ? '✔️ Vérifié' : '❌ Non vérifié' }}
-      </p>
+    <h3>Comptes Bancaires</h3>
+
+    <div *ngIf="comptes.length > 0; else noAccounts">
+      <div *ngFor="let compte of comptes; let i = index" class="account-card">
+        <h3 class="account-title">Compte {{ i + 1 }}</h3>
+
+        <div class="info-row">
+          <label>Institution :</label>
+          <p>{{ compte.institution }}</p>
+        </div>
+        <div class="info-row">
+          <label>ID Externe :</label>
+          <p>{{ compte.externalId }}</p>
+        </div>
+        <div class="info-row">
+          <label>IBAN :</label>
+          <p>{{ compte.iban }}</p>
+        </div>
+        <div class="info-row">
+          <label>Solde :</label>
+          <p>{{ compte.balance | currency: compte.currency }}</p>
+        </div>
+        <div class="info-row">
+          <label>Devise :</label>
+          <p>{{ compte.currency }}</p>
+        </div>
+
+        <!-- Ligne de séparation sauf pour le dernier élément -->
+        <hr *ngIf="i < comptes.length - 1" class="account-divider">
+      </div>
     </div>
+
+
+    <!-- Message si aucun compte trouvé -->
+    <ng-template #noAccounts>
+      <p>Aucun compte bancaire trouvé.</p>
+    </ng-template>
   </div>
 
   <div class="button-group">

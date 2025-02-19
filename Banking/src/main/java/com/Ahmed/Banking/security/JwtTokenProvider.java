@@ -51,11 +51,17 @@ public class JwtTokenProvider {
 
     // Méthode pour obtenir le nom d'utilisateur (email) du token JWT
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)  // Utilise la clé secrète pour extraire les informations
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+       try {
+           Claims claims = Jwts.parserBuilder()
+                   .setSigningKey(SECRET_KEY)  // Utilise la clé secrète pour extraire les informations
+                   .build()
+                   .parseClaimsJws(token)
+                   .getBody();
         return claims.getSubject(); // Retourne l'email du sujet
-    }
+        }
+        catch (Exception e) {
+            System.out.println("❌ Erreur lors de l'extraction de l'email depuis le token : " + e.getMessage());
+            return null;
+        }
+        }
 }

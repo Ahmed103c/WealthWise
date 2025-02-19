@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {Router, RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
+import { UserService } from '../../services/user.service';
 
 
 @Component({
@@ -11,16 +12,31 @@ import {FormsModule} from '@angular/forms';
   styleUrls: ['./infoperso.component.scss'],
   imports: [CommonModule, RouterModule,FormsModule]  // 🔹 Ajout des modules ici
 })
-export class InfopersoComponent {
-  user = {
-    fullName: 'Jean Dupont',
-    email: 'jean.dupont@email.com',
-    phone: '+33 6 12 34 56 78',
-    accountType: 'Compte Premium',
-    balance: 15230.75,
-    iban: 'FR76 3000 4000 5000 6000 7890 123',
-    verified: true
-  };
+export class InfopersoComponent implements OnInit {
+  user: any = {}; // Contiendra les informations de l'utilisateur
+  comptes: any[] = []; // Contiendra la liste des comptes
+
+  constructor(private userService: UserService) {}
+
+  ngOnInit() {
+    this.loadUserProfile();
+  }
+
+  loadUserProfile() {
+    this.userService.getUserProfile().subscribe(
+      (data) => {
+        this.user = {
+          nom: data.nom,
+          prenom: data.prenom,
+          email: data.email
+        };
+        this.comptes = data.comptes || []; // Assurez-vous que "comptes" est bien un tableau
+      },
+      (error) => {
+        console.error('Erreur lors du chargement du profil utilisateur', error);
+      }
+    );
+  }
 
   // Etat des champs en mode édition ou non
   editMode: { [key: string]: boolean } = {
