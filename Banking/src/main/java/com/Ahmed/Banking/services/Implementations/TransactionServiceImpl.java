@@ -1,13 +1,15 @@
 package com.Ahmed.Banking.services.Implementations;
 
+import com.Ahmed.Banking.models.*;
 import com.Ahmed.repositories.CategoryRepository;
 import com.Ahmed.repositories.CompteRepository;
+import com.Ahmed.repositories.BudgetCategorieRepository;
+import com.Ahmed.repositories.UtilisateurRepository;
+
 import com.Ahmed.repositories.TransactionRepository;
 import com.Ahmed.Banking.dto.TransactionDto;
-import com.Ahmed.Banking.models.Transaction;
-import com.Ahmed.Banking.models.Compte;
-import com.Ahmed.Banking.models.Category;
 import com.Ahmed.Banking.services.TransactionService;
+import jakarta.transaction.Transactional;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -25,24 +27,35 @@ import java.util.*;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final CompteRepository compteRepository;
-    private final CategoryRepository categoryRepository;
-    private final RestTemplate restTemplate;
 
+    private static final String FASTAPI_URL = "http://localhost:8000/predict"; // URL du modèle ML
     private static final String BASE_URL = "https://bankaccountdata.gocardless.com/api/v2";
     private static final String SECRET_ID = "2f7225b9-c4a2-4099-b607-3e4b45013428";  // 🔥 Replace with real credentials
     private static final String SECRET_KEY = "b990a265d0ca0d005b235c7bf1da15cf534e9c2e8822ae51874a87afe4bbb5c8166b6389393a84a46ca69b21d5fc17f7be64e77f50f6e92ad0068cd41c79c95c"; // 🔥 Replace with real credentials
     private static final String SANDBOX_INSTITUTION_ID = "SANDBOXFINANCE_SFIN0000";
 
+    private final TransactionRepository transactionRepository;
+    private final CompteRepository compteRepository;
+    private final CategoryRepository categoryRepository;
+    private final BudgetCategorieRepository budgetCategorieRepository;
+    private final UtilisateurRepository utilisateurRepository;
+    private final RestTemplate restTemplate;
+    private final CategoryService categoryService; // ✅ Ajout du service de catégorisation
+
+
     public TransactionServiceImpl(TransactionRepository transactionRepository,
                                   CompteRepository compteRepository,
                                   CategoryRepository categoryRepository,
-                                  RestTemplate restTemplate) {
+                                  BudgetCategorieRepository budgetCategorieRepository,
+                                  UtilisateurRepository utilisateurRepository,
+                                  RestTemplate restTemplate, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
         this.compteRepository = compteRepository;
         this.categoryRepository = categoryRepository;
+        this.budgetCategorieRepository = budgetCategorieRepository;
+        this.utilisateurRepository = utilisateurRepository;
         this.restTemplate = restTemplate;
+        this.categoryService = categoryService;
     }
 
     // ✅ Step 1: Fetch Access Token Automatically
@@ -103,10 +116,10 @@ public class TransactionServiceImpl implements TransactionService {
             Map<String, Object> transactionsData = (Map<String, Object>) response.getBody().get("transactions");
             List<Map<String, Object>> bookedTransactions = (List<Map<String, Object>>) transactionsData.get("booked");
 
-            // ✅ FIX: Fetch unique account
+            // ✅ Vérification si le compte existe
             Optional<Compte> compteOptional = compteRepository.findByExternalId(accountId);
             if (compteOptional.isEmpty()) {
-                throw new RuntimeException("❌ No account found for externalId: " + accountId);
+                throw new RuntimeException("❌ Compte introuvable !");
             }
             Compte compte = compteOptional.get();
 
@@ -114,46 +127,124 @@ public class TransactionServiceImpl implements TransactionService {
                 Transaction transaction = new Transaction();
                 transaction.setCompte(compte);
 
-                // ✅ Handle Date Parsing Safely
+                // ✅ Vérification et conversion sécurisée de la date
                 try {
                     transaction.setTransactionDate(LocalDate.parse(transactionData.get("bookingDate").toString()));
                 } catch (Exception e) {
-                    throw new RuntimeException("❌ Invalid bookingDate format: " + transactionData.get("bookingDate"), e);
+                    throw new RuntimeException("❌ Format de date invalide : " + transactionData.get("bookingDate"), e);
                 }
 
-                // ✅ Extract and Convert Transaction Amount Safely
+                // ✅ Extraction et conversion sécurisée du montant
                 Map<String, Object> transactionAmount = (Map<String, Object>) transactionData.get("transactionAmount");
                 if (transactionAmount != null && transactionAmount.containsKey("amount")) {
                     String amountStr = transactionAmount.get("amount").toString().trim();
                     try {
-                        // ✅ Convert amount safely, handling scientific notation
                         BigDecimal amount = new BigDecimal(amountStr.replace(",", ""));
                         transaction.setAmount(amount);
                     } catch (NumberFormatException e) {
-                        throw new RuntimeException("❌ Invalid transaction amount format: " + amountStr, e);
+                        throw new RuntimeException("❌ Format du montant invalide : " + amountStr, e);
                     }
                 } else {
-                    throw new RuntimeException("❌ Missing transaction amount field");
+                    throw new RuntimeException("❌ Le champ montant est manquant !");
                 }
 
-                // ✅ Extract and Set Transaction Description Safely
+                // ✅ Vérification et assignation de la description
                 transaction.setDescription(transactionData.getOrDefault("remittanceInformationUnstructured", "N/A").toString());
 
-                // ✅ Save Transaction
+                // ✅ Sauvegarde de la transaction
                 transactionRepository.save(transaction);
             }
-            System.out.println("✅ Transactions successfully imported for account: " + accountId);
+            System.out.println("✅ Transactions importées avec succès pour le compte : " + accountId);
         } else {
-            throw new RuntimeException("❌ Failed to fetch transactions");
+            throw new RuntimeException("❌ Impossible de récupérer les transactions");
         }
     }
 
 
-
     @Override
     public TransactionDto saveTransaction(TransactionDto transactionDto) {
-        return null;
+        // ✅ Vérifier que le `compteId` n'est pas null
+        if (transactionDto.getCompteId() == null) {
+            throw new IllegalArgumentException("❌ Le champ `compteId` est obligatoire !");
+        }
+
+        // ✅ Récupération du compte
+        Optional<Compte> compteOpt = compteRepository.findById(transactionDto.getCompteId());
+        if (compteOpt.isEmpty()) {
+            throw new RuntimeException("❌ Compte introuvable !");
+        }
+        Compte compte = compteOpt.get();
+        Utilisateur utilisateur = compte.getUtilisateur();
+
+        // ✅ Vérifier si `categoryId` est fourni, sinon prédire avec ML
+        Category category;
+        if (transactionDto.getCategoryId() == null || transactionDto.getCategoryId() == 0) {
+            category = categoryService.predictCategory(transactionDto.getDescription());
+        } else {
+            Optional<Category> categoryOpt = categoryRepository.findById(transactionDto.getCategoryId());
+            if (categoryOpt.isEmpty()) {
+                throw new RuntimeException("❌ Catégorie introuvable !");
+            }
+            category = categoryOpt.get();
+        }
+
+        // ✅ Création de la transaction
+        Transaction transaction = new Transaction();
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setTransactionDate(transactionDto.getTransactionDate());
+        transaction.setDescription(transactionDto.getDescription());
+        transaction.setCompte(compte);
+        transaction.setCategory(category);
+
+        // ✅ Vérifier que le solde du compte et utilisateur ne sont pas null
+        if (compte.getBalance() == null) {
+            compte.setBalance(BigDecimal.ZERO);
+        }
+        if (utilisateur.getBalance() == null) {
+            utilisateur.setBalance(BigDecimal.ZERO);
+        }
+
+        // ✅ Mise à jour du solde du compte et utilisateur
+        BigDecimal montant = transactionDto.getAmount() != null ? transactionDto.getAmount() : BigDecimal.ZERO;
+
+        if (transactionDto.getType() == TransactionType.DEPENSE) {
+            if (compte.getBalance().compareTo(montant) < 0) {
+                throw new RuntimeException("❌ Solde insuffisant !");
+            }
+            compte.setBalance(compte.getBalance().subtract(montant));
+            utilisateur.setBalance(utilisateur.getBalance().subtract(montant));
+        } else {
+            compte.setBalance(compte.getBalance().add(montant));
+            utilisateur.setBalance(utilisateur.getBalance().add(montant));
+        }
+
+        // ✅ Sauvegarde du compte et de l'utilisateur
+        utilisateurRepository.save(utilisateur);
+        compteRepository.save(compte);
+
+        // ✅ Vérifier et mettre à jour le budget si nécessaire
+        Optional<BudgetCategorie> budgetCategorieOpt = budgetCategorieRepository.findByBudgetIdAndCategoryId(compte.getUtilisateur().getId(), category.getId());
+        if (budgetCategorieOpt.isPresent()) {
+            BudgetCategorie budgetCategorie = budgetCategorieOpt.get();
+
+            if (budgetCategorie.getMontantDepense() == null) {
+                budgetCategorie.setMontantDepense(BigDecimal.ZERO);
+            }
+
+            budgetCategorie.setMontantDepense(budgetCategorie.getMontantDepense().add(montant));
+
+            if (budgetCategorie.getMontantDepense().compareTo(budgetCategorie.getMontantAlloue()) > 0) {
+                throw new RuntimeException("⚠️ Attention ! Dépassement du budget alloué !");
+            }
+
+            budgetCategorieRepository.save(budgetCategorie);
+        }
+
+        // ✅ Sauvegarde de la transaction
+        transaction = transactionRepository.save(transaction);
+        return TransactionDto.fromEntity(transaction);
     }
+
 
     @Override
     public List<TransactionDto> getTransactionsByCompteId(Integer compteId) {
