@@ -5,6 +5,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { InfopersoComponent } from './pages/infoperso/infoperso.component';
 import { MainLayoutComponent } from './pages/main-layout/main-layout.component';
 import { HomeComponent } from './pages/home/home.component';
+import { BudgetComponent } from './pages/budget/budget.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,7 +17,8 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'infoperso', component: InfopersoComponent }
+      { path: 'infoperso', component: InfopersoComponent },
+      { path: 'budget', component: BudgetComponent }
     ]
   },
 ];

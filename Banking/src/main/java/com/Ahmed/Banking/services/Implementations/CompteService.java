@@ -35,11 +35,29 @@ public class CompteService {
         this.transactionRepository = transactionRepository;
     }
 
-    // ✅ OPTION 1: Manually Save an Account
     public Compte saveCompte(Compte compte) {
         if (compte.getUtilisateur() == null || compte.getUtilisateur().getId() == null) {
             throw new IllegalArgumentException("Le compte doit être associé à un utilisateur !");
         }
+
+        // Vérifier si l'utilisateur existe
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findById(compte.getUtilisateur().getId());
+        if (utilisateurOpt.isEmpty()) {
+            throw new RuntimeException("❌ Utilisateur introuvable !");
+        }
+
+        Utilisateur utilisateur = utilisateurOpt.get();
+
+        // ✅ Vérification et conversion avec BigDecimal
+        BigDecimal compteBalance = compte.getBalance() != null ? compte.getBalance() : BigDecimal.ZERO;
+        BigDecimal utilisateurBalance = utilisateur.getBalance() != null ? utilisateur.getBalance() : BigDecimal.ZERO;
+
+        // ✅ Mettre à jour le solde total
+        utilisateurBalance = utilisateurBalance.add(compteBalance);
+        utilisateur.setBalance(utilisateurBalance);
+
+        // ✅ Enregistrer l'utilisateur et le compte
+        utilisateurRepository.save(utilisateur);
         return compteRepository.save(compte);
     }
 
@@ -121,6 +139,60 @@ public class CompteService {
         throw new RuntimeException("❌ Failed to generate requisition link");
     }
 
+    private Compte fetchAccountDetails(String accessToken, String accountId) {
+        // ✅ Étape 1 : Récupération des détails du compte
+        String detailsUrl = BASE_URL + "/accounts/" + accountId + "/details/";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> detailsResponse = restTemplate.exchange(detailsUrl, HttpMethod.GET, request, Map.class);
+
+        if (detailsResponse.getStatusCode() != HttpStatus.OK || detailsResponse.getBody() == null) {
+            throw new RuntimeException("❌ Impossible de récupérer les détails du compte : " + accountId);
+        }
+
+        // ✅ Extraction des données du compte
+        Map<String, Object> accountData = (Map<String, Object>) detailsResponse.getBody().get("account");
+        if (accountData == null) {
+            throw new RuntimeException("❌ Impossible d'extraire les détails du compte : " + accountId);
+        }
+
+        String iban = (String) accountData.get("iban");
+        String currency = (String) accountData.get("currency");
+        String institution = (String) accountData.get("name"); // 🔍 Utilisation de `name` comme institution
+
+        // ✅ Étape 2 : Récupération du solde du compte
+        String balanceUrl = BASE_URL + "/accounts/" + accountId + "/balances/";
+
+        ResponseEntity<Map> balanceResponse = restTemplate.exchange(balanceUrl, HttpMethod.GET, request, Map.class);
+
+        if (balanceResponse.getStatusCode() != HttpStatus.OK || balanceResponse.getBody() == null) {
+            throw new RuntimeException("❌ Impossible de récupérer le solde du compte : " + accountId);
+        }
+
+        List<Map<String, Object>> balances = (List<Map<String, Object>>) balanceResponse.getBody().get("balances");
+        BigDecimal balanceAmount = BigDecimal.ZERO;
+
+        if (balances != null && !balances.isEmpty()) {
+            Map<String, Object> firstBalance = balances.get(0); // 🔍 Prendre le premier solde
+            Map<String, Object> balanceAmountData = (Map<String, Object>) firstBalance.get("balanceAmount");
+            if (balanceAmountData != null && balanceAmountData.get("amount") != null) {
+                balanceAmount = new BigDecimal(balanceAmountData.get("amount").toString());
+            }
+        }
+
+        // ✅ Création de l'objet `Compte` avec les données récupérées
+        return Compte.builder()
+                .externalId(accountId)
+                .iban(iban)
+                .currency(currency)
+                .institution(institution)
+                .balance(balanceAmount)
+                .build();
+    }
+
 
     // ✅ STEP 5: Fetch and Save User's Accounts
     public List<String> fetchAndSaveUserAccounts(String requisitionId, Integer userId) {
@@ -136,21 +208,40 @@ public class CompteService {
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             List<String> accounts = (List<String>) response.getBody().get("accounts");
 
-            Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findById(userId);
-            if (utilisateurOptional.isEmpty()) {
-                throw new RuntimeException("Utilisateur introuvable !");
+            // 🔍 Vérifier si l'utilisateur existe
+            Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("❌ Utilisateur introuvable !"));
+
+            // ✅ Initialisation du solde total de l'utilisateur
+            if (utilisateur.getBalance() == null) {
+                utilisateur.setBalance(BigDecimal.ZERO);
             }
-            Utilisateur utilisateur = utilisateurOptional.get();
+
+            BigDecimal totalNewBalance = BigDecimal.ZERO; // ✅ Accumulateur pour les nouveaux comptes
 
             for (String accountId : accounts) {
-                Compte compte = new Compte();
-                compte.setExternalId(accountId); // ✅ Save the actual UUID instead of a number
+                // 🔍 Récupérer les détails du compte depuis l'API
+                Compte compte = fetchAccountDetails(accessToken, accountId);
+
+                // Associer l'utilisateur au compte
                 compte.setUtilisateur(utilisateur);
+
+                // ✅ Ajouter le solde du compte au total des nouveaux comptes
+                totalNewBalance = totalNewBalance.add(compte.getBalance());
+
+                // Sauvegarde du compte
                 compteRepository.save(compte);
             }
+
+            // ✅ Mise à jour du solde utilisateur avec le total des nouveaux comptes
+            utilisateur.setBalance(utilisateur.getBalance().add(totalNewBalance));
+
+            // ✅ Sauvegarde de l'utilisateur avec son nouveau solde
+            utilisateurRepository.save(utilisateur);
+
             return accounts;
         } else {
-            throw new RuntimeException("❌ Failed to fetch user accounts");
+            throw new RuntimeException("❌ Impossible de récupérer les comptes de l'utilisateur");
         }
     }
 
@@ -166,7 +257,7 @@ public class CompteService {
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            System.out.println("🔍 Raw API Response: " + response.getBody()); // ✅ Debugging log
+            System.out.println("🔍 Raw API Response: " + response.getBody());
 
             Map<String, Object> transactionsData = (Map<String, Object>) response.getBody().get("transactions");
             List<Map<String, Object>> bookedTransactions = (List<Map<String, Object>>) transactionsData.get("booked");
@@ -181,27 +272,17 @@ public class CompteService {
                 Transaction transaction = new Transaction();
                 transaction.setCompte(compte);
 
-                // ✅ Parse transaction date safely
                 try {
                     transaction.setTransactionDate(LocalDate.parse(transactionData.get("bookingDate").toString()));
                 } catch (Exception e) {
                     throw new RuntimeException("❌ Invalid bookingDate format: " + transactionData.get("bookingDate"), e);
                 }
 
-                // ✅ Extract and convert transaction amount safely
                 Map<String, Object> transactionAmount = (Map<String, Object>) transactionData.get("transactionAmount");
                 if (transactionAmount != null && transactionAmount.containsKey("amount")) {
                     String amountStr = transactionAmount.get("amount").toString().trim();
-
                     try {
-                        // ✅ Remove commas and trim spaces
                         BigDecimal amount = new BigDecimal(amountStr.replace(",", ""));
-
-                        // ✅ Handle scientific notation (exponential numbers)
-                        if (amountStr.toLowerCase().contains("e")) {
-                            amount = new BigDecimal(amountStr);
-                        }
-
                         transaction.setAmount(amount);
                     } catch (NumberFormatException e) {
                         throw new RuntimeException("❌ Invalid transaction amount format: " + amountStr, e);
@@ -210,10 +291,8 @@ public class CompteService {
                     throw new RuntimeException("❌ Missing transaction amount field");
                 }
 
-                // ✅ Extract and set transaction description safely
                 transaction.setDescription(transactionData.getOrDefault("remittanceInformationUnstructured", "N/A").toString());
 
-                // ✅ Save transaction
                 transactionRepository.save(transaction);
             }
             System.out.println("✅ Transactions successfully imported for account: " + accountId);
