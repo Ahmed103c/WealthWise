@@ -1,0 +1,10 @@
+.deposit {
+  display: flex; /* Utiliser flexbox pour centrer */
+  justify-content: center; /* Centrer horizontalement */
+  align-items: center; /* Centrer verticalement */
+  height: 50px; /* Hauteur de la div */
+  color: black; /* Texte blanc */
+  font-size: 24px; /* Taille du texte */
+  font-family: "Poppins", sans-serif; /* Police agréable */
+  text-align: center; /* Centrer le texte à l'intérieur */
+}

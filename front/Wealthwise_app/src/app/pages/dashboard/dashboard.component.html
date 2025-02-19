@@ -1,4 +1,7 @@
-
-
-
-
+<div class="dashboard-widgets-container">
+    <div class="dashboard-widgets">
+        @for (w of store.widgets(); track w.id) {
+        <app-widget [data]="w"></app-widget>
+        }
+    </div>
+</div>
