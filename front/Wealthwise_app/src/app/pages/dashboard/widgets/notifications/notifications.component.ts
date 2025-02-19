@@ -12,5 +12,7 @@ export class NotificationsComponent {
     { id: 1, message: 'Votre compte a été vérifié' },
     { id: 2, message: 'Vous avez un nouveau message' },
     { id: 3, message: 'Nouvelle mise à jour disponible' },
+    { id: 4, message: 'Suspect de Fraude !' },
+    { id: 5, message: 'Nouvelle transcation' },
   ];
 }

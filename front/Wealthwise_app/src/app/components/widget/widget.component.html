@@ -1,4 +1,4 @@
-<div class="widget mat-elevation-z3">
+<div class="widget" [style.background-color]="data().backgroundColor ?? 'white'"[style.color]="data().color ?? 'inherit'">
     <h3 class="m-0">{{data().label}}</h3>
     <ng-container [ngComponentOutlet]="data().content"></ng-container>
 </div>

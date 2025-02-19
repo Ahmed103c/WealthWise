@@ -12,34 +12,30 @@
   gap: 10px;
 }
 
-.dashboard-widgets > app-widget {
-  animation: fadeInUp 0.5s ease-out;
-}
-
 /* Par défaut, tous les widgets prennent 1 ligne et 1 colonne */
 .dashboard-widgets > app-widget {
   animation: fadeInUp 0.5s ease-out;
 }
 
-/* 5ème élément : 2 rows, 2 columns */
+
 .dashboard-widgets > app-widget:nth-child(5) {
-  grid-column: span 2;
+  grid-column: span 3;
   grid-row: span 2;
 }
 
-/* 5ème élément : 2 rows, 2 columns */
+
 .dashboard-widgets > app-widget:nth-child(6) {
-  grid-column: span 2;
+  grid-column: span 1;
   grid-row: span 1;
 }
 
-/* 6ème élément : 1 row, 2 columns */
+
 .dashboard-widgets > app-widget:nth-child(7) {
-  grid-column: span 2;
+  grid-column: span 1;
   grid-row: span 3;
 }
-/* 8ème élément : 3 rows, 2 columns */
+
 .dashboard-widgets > app-widget:nth-child(8) {
-  grid-column: span 2;
+  grid-column: span 3;
   grid-row: span 2;
 }

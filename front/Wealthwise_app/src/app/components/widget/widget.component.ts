@@ -1,5 +1,5 @@
 import { Component, Host, input } from '@angular/core';
-import { Wigdet } from '../../models/dashboardWidget';
+import { Widget } from '../../models/dashboardWidget';
 import { NgComponentOutlet } from '@angular/common';
 
 @Component({
@@ -23,5 +23,5 @@ import { NgComponentOutlet } from '@angular/common';
   // },
 })
 export class WidgetComponent {
-  data = input.required<Wigdet>();
+  data = input.required<Widget>();
 }

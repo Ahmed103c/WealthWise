@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLinkActive, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WidgetComponent } from '../../components/widget/widget.component';
-import { Wigdet } from '../../models/dashboardWidget';
+import { Widget } from '../../models/dashboardWidget';
 import { DashboardService } from '../../services/dashboardService/dashboard.service';
 
 @Component({

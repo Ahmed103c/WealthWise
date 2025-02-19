@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Wigdet } from '../../models/dashboardWidget';
+import { Widget } from '../../models/dashboardWidget';
 import { SoldeWidgetComponent } from '../../pages/dashboard/widgets/solde-widget/solde-widget.component';
 import { DepositWidgetComponent } from '../../pages/dashboard/widgets/deposit-widget/deposit-widget.component';
 import { WithdrawlWidgetComponent } from '../../pages/dashboard/widgets/withdrawl-widget/withdrawl-widget.component';
@@ -11,46 +11,62 @@ import { NotificationsComponent } from '../../pages/dashboard/widgets/notificati
 
 @Injectable()
 export class DashboardService {
-  widgets = signal<Wigdet[]>([
+  widgets = signal<Widget[]>([
     {
       id: 1,
       label: 'Solde',
       content: SoldeWidgetComponent,
+      backgroundColor: '#845162',
+      color: 'whitesmoke',
     },
     {
       id: 2,
       label: 'Deposit',
       content: DepositWidgetComponent,
+      backgroundColor: '#845162',
+      color: 'whitesmoke',
     },
     {
       id: 3,
       label: 'Withdrawl',
       content: WithdrawlWidgetComponent,
+      backgroundColor: '#845162',
+      color: 'whitesmoke',
     },
     {
       id: 4,
       label: 'Growth',
       content: GrowthWidgetComponent,
+      backgroundColor: '#845162',
+      color: 'whitesmoke',
     },
     {
       id: 5,
       label: 'Dépenses Catégories',
       content: DepensePieChartComponent,
+      backgroundColor: '#E3B6B1',
+      color: 'whitesmoke',
     },
     {
       id: 6,
       label: 'Goals',
       content: GoalsComponent,
+      backgroundColor: '#E3B6B1',
+      color: 'whitesmoke',
     },
     {
       id: 7,
       label: 'Notifications 🔔',
       content: NotificationsComponent,
+      backgroundColor: '#E3B6B1',
+      color: 'whitesmoke',
     },
     {
       id: 8,
       label: 'Dépenses graph',
       content: DepenseGraphComponent,
+      backgroundColor: '#E3B6B1',
+      color: 'whitesmoke',
     },
   ]);
   constructor() {}
