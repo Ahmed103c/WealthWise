@@ -1,62 +1,31 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { BudgetService } from '../../services/budget.service';
+import { FormsModule } from '@angular/forms'; // ✅ Ajoute FormsModule
 
 @Component({
   selector: 'app-budget',
-  standalone: true,
   templateUrl: './budget.component.html',
   styleUrls: ['./budget.component.scss'],
+  imports:[FormsModule]
 })
 export class BudgetComponent {
-  budgetTotal: number = 0;
-  categories: { nom: string; montant: number }[] = [];
-  conseils: string = 'Veuillez entrer un budget total.';
+  montantAlloue: number = 500; // Valeur par défaut
+  utilisateurId: number = 1; // ⚠️ ID utilisateur à changer si besoin
+  startDate: string = "2025-02-18";
+  endDate: string = "2025-02-18";
 
-  constructor(private http: HttpClient) {}
+  constructor(private budgetService: BudgetService) {}
 
-  ajouterCategorie() {
-    this.categories.push({ nom: '', montant: 0 });
-    this.mettreAJourConseils();
-  }
-
-  supprimerCategorie(index: number) {
-    this.categories.splice(index, 1);
-    this.mettreAJourConseils();
-  }
-
-  mettreAJourConseils() {
-    let sommeBudgets = this.categories.reduce((total, cat) => total + (cat.montant || 0), 0);
-
-    if (this.budgetTotal === 0) {
-      this.conseils = 'Veuillez entrer un budget total.';
-      return;
-    }
-
-    if (sommeBudgets > this.budgetTotal) {
-      this.conseils = '⚠️ Attention, vous avez dépassé votre budget total !';
-    } else {
-      this.conseils = `💡 Vous avez encore ${this.budgetTotal - sommeBudgets}€ disponibles.`;
-    }
-  }
-
-  calculerProgression(): number {
-    let sommeBudgets = this.categories.reduce((total, cat) => total + (cat.montant || 0), 0);
-    return this.budgetTotal > 0 ? (sommeBudgets / this.budgetTotal) * 100 : 0;
-  }
-
-  sauvegarderBudget() {
-    const budgetData = {
-      budgetTotal: this.budgetTotal,
-      categories: this.categories,
-    };
-
-    this.http.post('http://localhost:8080/api/budget', budgetData).subscribe(
-      (response) => {
-        console.log('Budget sauvegardé avec succès !', response);
-        alert('Budget sauvegardé avec succès !');
+  // ✅ Fonction pour créer un budget
+  creerBudget() {
+    this.budgetService.creerBudget(this.utilisateurId, this.montantAlloue, this.startDate, this.endDate).subscribe(
+      response => {
+        console.log('✅ Budget créé avec succès :', response);
+        alert('Budget créé avec succès !');
       },
-      (error) => {
-        console.error('Erreur lors de la sauvegarde du budget', error);
+      error => {
+        console.error('❌ Erreur lors de la création du budget :', error);
+        alert('Erreur lors de la création du budget.');
       }
     );
   }
