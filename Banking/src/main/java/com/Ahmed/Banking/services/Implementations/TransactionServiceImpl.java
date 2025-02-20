@@ -101,9 +101,9 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    // ✅ Fetch transactions from GoCardless API & categorize them
     public void fetchAndSaveTransactions(String accessToken, String accountId) {
         String url = BASE_URL + "/accounts/" + accountId + "/transactions/";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         HttpEntity<String> request = new HttpEntity<>(headers);
@@ -116,7 +116,6 @@ public class TransactionServiceImpl implements TransactionService {
             Map<String, Object> transactionsData = (Map<String, Object>) response.getBody().get("transactions");
             List<Map<String, Object>> bookedTransactions = (List<Map<String, Object>>) transactionsData.get("booked");
 
-            // ✅ Vérification si le compte existe
             Optional<Compte> compteOptional = compteRepository.findByExternalId(accountId);
             if (compteOptional.isEmpty()) {
                 throw new RuntimeException("❌ Compte introuvable !");
@@ -124,37 +123,34 @@ public class TransactionServiceImpl implements TransactionService {
             Compte compte = compteOptional.get();
 
             for (Map<String, Object> transactionData : bookedTransactions) {
-                Transaction transaction = new Transaction();
-                transaction.setCompte(compte);
-
-                // ✅ Vérification et conversion sécurisée de la date
                 try {
-                    transaction.setTransactionDate(LocalDate.parse(transactionData.get("bookingDate").toString()));
-                } catch (Exception e) {
-                    throw new RuntimeException("❌ Format de date invalide : " + transactionData.get("bookingDate"), e);
-                }
+                    Transaction transaction = new Transaction();
+                    transaction.setCompte(compte);
 
-                // ✅ Extraction et conversion sécurisée du montant
-                Map<String, Object> transactionAmount = (Map<String, Object>) transactionData.get("transactionAmount");
-                if (transactionAmount != null && transactionAmount.containsKey("amount")) {
-                    String amountStr = transactionAmount.get("amount").toString().trim();
-                    try {
+                    transaction.setTransactionDate(LocalDate.parse(transactionData.get("bookingDate").toString()));
+
+                    Map<String, Object> transactionAmount = (Map<String, Object>) transactionData.get("transactionAmount");
+                    if (transactionAmount != null && transactionAmount.containsKey("amount")) {
+                        String amountStr = transactionAmount.get("amount").toString().trim();
                         BigDecimal amount = new BigDecimal(amountStr.replace(",", ""));
                         transaction.setAmount(amount);
-                    } catch (NumberFormatException e) {
-                        throw new RuntimeException("❌ Format du montant invalide : " + amountStr, e);
+                    } else {
+                        throw new RuntimeException("❌ Le champ montant est manquant !");
                     }
-                } else {
-                    throw new RuntimeException("❌ Le champ montant est manquant !");
+
+                    transaction.setDescription(transactionData.getOrDefault("remittanceInformationUnstructured", "N/A").toString());
+
+                    // ✅ Auto-détection de la catégorie
+                    Category category = categoryService.predictCategory(transaction.getDescription());
+                    transaction.setCategory(category);
+
+                    transactionRepository.save(transaction);
+                    System.out.println("✅ Transaction enregistrée avec catégorie détectée : " + category.getName());
+
+                } catch (Exception e) {
+                    System.err.println("⚠️ Erreur lors du traitement d'une transaction API : " + e.getMessage());
                 }
-
-                // ✅ Vérification et assignation de la description
-                transaction.setDescription(transactionData.getOrDefault("remittanceInformationUnstructured", "N/A").toString());
-
-                // ✅ Sauvegarde de la transaction
-                transactionRepository.save(transaction);
             }
-            System.out.println("✅ Transactions importées avec succès pour le compte : " + accountId);
         } else {
             throw new RuntimeException("❌ Impossible de récupérer les transactions");
         }
@@ -273,14 +269,20 @@ public class TransactionServiceImpl implements TransactionService {
                     }
                     transaction.setCompte(compte.get());
 
+                    // ✅ Auto-détection de la catégorie
+                    Category category = categoryService.predictCategory(transaction.getDescription());
+                    transaction.setCategory(category);
+
                     transactions.add(transaction);
+                    System.out.println("✅ Transaction CSV enregistrée avec catégorie détectée : " + category.getName());
+
                 } catch (Exception e) {
-                    System.err.println("Erreur lors de l'importation d'une ligne CSV : " + e.getMessage());
+                    System.err.println("⚠️ Erreur lors de l'importation d'une ligne CSV : " + e.getMessage());
                 }
             }
             transactionRepository.saveAll(transactions);
         } catch (Exception e) {
-            throw new RuntimeException("Échec de l'importation du fichier CSV : " + e.getMessage());
+            throw new RuntimeException("❌ Échec de l'importation du fichier CSV : " + e.getMessage());
         }
     }
 

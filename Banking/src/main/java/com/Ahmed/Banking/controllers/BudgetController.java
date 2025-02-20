@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/budget")
@@ -23,7 +25,7 @@ public class BudgetController {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    // ✅ Création d'un budget avec validation
+    // Création d'un budget avec validation
     @PostMapping("/create")
     public ResponseEntity<?> creerBudget(@RequestBody Budget budget) {
         if (budget.getUtilisateur() == null || budget.getUtilisateur().getId() == null) {
@@ -33,9 +35,9 @@ public class BudgetController {
         Budget newBudget;
         try {
             newBudget = budgetService.creerBudget(
-                    budget.getUtilisateur().getId(),  // ✅ Correction
+                    budget.getUtilisateur().getId(),  // Correction
                     budget.getMontantAlloue(),
-                    "mensuel"  // 📌 Remplace par `budget.getPeriode()` si le champ existe dans `Budget`
+                    "mensuel"  // Remplacez par `budget.getPeriode()` si ce champ existe dans Budget
             );
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("❌ Erreur : " + e.getMessage());
@@ -44,7 +46,7 @@ public class BudgetController {
         return ResponseEntity.ok(newBudget);
     }
 
-    // ✅ Récupérer les budgets par utilisateur
+    // Récupérer les budgets par utilisateur
     @GetMapping("/{utilisateurId}")
     public ResponseEntity<?> getBudgets(@PathVariable Integer utilisateurId) {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
@@ -55,14 +57,11 @@ public class BudgetController {
         }
 
         List<Budget> budgets = budgetService.getBudgetsParUtilisateur(utilisateurId);
-        if (budgets.isEmpty()) {
-            return ResponseEntity.ok("⚠️ Aucun budget trouvé pour cet utilisateur.");
-        }
-
+        // Retourne toujours un JSON : même un tableau vide
         return ResponseEntity.ok(budgets);
     }
 
-    // ✅ Allouer un budget à une catégorie
+    // Allouer un budget à une catégorie
     @PostMapping("/allouer")
     public ResponseEntity<?> allouerBudget(
             @RequestParam Integer budgetId,
