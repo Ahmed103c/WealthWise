@@ -1,15 +1,8 @@
 {
-<<<<<<< HEAD
-  "hash": "5156966c",
+  "hash": "38d13396",
   "configHash": "13582ac7",
-  "lockfileHash": "df5e28d3",
-  "browserHash": "cbbcfeee",
-=======
-  "hash": "8f52e1de",
-  "configHash": "6b057661",
-  "lockfileHash": "9ff533d0",
-  "browserHash": "ed6dd1af",
->>>>>>> ahmed/front/Dashbord
+  "lockfileHash": "176b3d05",
+  "browserHash": "24b20b7b",
   "optimized": {},
   "chunks": {}
 }

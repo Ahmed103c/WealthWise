@@ -1,0 +1,63 @@
+<div class="info-page">
+    <h2>📜 Transactions</h2>
+  
+    <!-- ✅ Add Transaction Form -->
+    <div class="info-section">
+      <h3>➕ Add Transaction</h3>
+      <label>Date:</label>
+      <input type="date" [(ngModel)]="newTransaction.date" required />
+  
+      <label>Description:</label>
+      <input type="text" [(ngModel)]="newTransaction.description" required />
+  
+      <label>Amount (€):</label>
+      <input type="number" [(ngModel)]="newTransaction.montant" required />
+  
+      <label>Type:</label>
+      <select [(ngModel)]="newTransaction.type">
+        <option value="credit">Credit</option>
+        <option value="debit">Debit</option>
+      </select>
+  
+      <button class="save-btn" (click)="addTransaction()">💾 Add</button>
+    </div>
+  
+    <!-- ✅ Import Transactions -->
+    <div class="info-section">
+      <h3>📂 Import Transactions</h3>
+      <input type="file" (change)="onFileSelected($event)" />
+      <button class="save-btn" (click)="importTransactions()">📥 Import</button>
+    </div>
+  
+    <!-- ✅ Export Transactions -->
+    <div class="info-section">
+      <h3>📤 Export Transactions</h3>
+      <button class="save-btn" (click)="exportTransactions()">⬇ Download CSV</button>
+    </div>
+  
+    <!-- ✅ Transactions Table -->
+    <div class="info-section">
+      <h3>📊 Transactions History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount (€)</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions">
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.description }}</td>
+            <td>{{ transaction.montant }}</td>
+            <td>{{ transaction.type }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <p *ngIf="message">{{ message }}</p>
+  </div>
+  
