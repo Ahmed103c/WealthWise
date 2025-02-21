@@ -60,13 +60,18 @@ export class AuthService {
     return null;
   }
 
-  // getSolde() :number | null{
-
-  // }
   getComptesByUserId(userId: number): Observable<any> {
     const url = `http://localhost:8070/api/comptes/utilisateur/${userId}`;
 
-    console.log("🔹 Récupération des comptes pour l'utilisateur ID :", userId);
+    console.log("Récupération des comptes pour l'utilisateur ID :", userId);
+
+    return this.http.get<any>(url);
+  }
+
+  getTransactionsByComptesId(comptesId: number): Observable<any> {
+    const url = `http://localhost:8070/transactions/compte/${comptesId}`;
+
+    console.log('Récupération des transcations pour compte ID :', comptesId);
 
     return this.http.get<any>(url);
   }

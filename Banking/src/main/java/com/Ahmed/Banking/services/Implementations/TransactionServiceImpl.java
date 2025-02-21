@@ -8,7 +8,10 @@ import com.Ahmed.repositories.UtilisateurRepository;
 
 import com.Ahmed.repositories.TransactionRepository;
 import com.Ahmed.Banking.dto.TransactionDto;
+import com.Ahmed.Banking.dto.UtilisateurDto;
 import com.Ahmed.Banking.services.TransactionService;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -23,6 +26,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -245,11 +249,28 @@ public class TransactionServiceImpl implements TransactionService {
         return TransactionDto.fromEntity(transaction);
     }
 
+    //     @Override
+    // public List<UtilisateurDto> findAll() {
+    //     return repository.findAll()
+    //             .stream() //premettre de renvoyer liste Utilisateur : Stream<Utilisateur>
+    //             .map(UtilisateurDto::fromEntity) // : Stream<UtilisateurDto>
+    //             .collect(Collectors.toList());
+    // }
+
 
     @Override
     public List<TransactionDto> getTransactionsByCompteId(Integer compteId) {
-        return List.of();
+        //return List.of();
+         if (!compteRepository.existsById(compteId)) {
+        throw new EntityNotFoundException("Compte avec ID " + compteId + " non trouvé.");
     }
+        List<Transaction> transactions = transactionRepository.findByCompteId(compteId);
+
+        return transactions.stream()
+                .map(TransactionDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+    
 
     // ✅ CSV IMPORT FUNCTIONALITY
     @Override

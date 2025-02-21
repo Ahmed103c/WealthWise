@@ -14,7 +14,7 @@ export class SoldeWidgetComponent {
   comptes: any[] = [];
   totalSolde: number = 0;
   ngOnInit() {
-    this.authservice.getComptesByUserId(2).subscribe(
+    this.authservice.getComptesByUserId(1).subscribe(
       (data) => {
         console.log('📥 Comptes récupérés :', data);
         this.comptes = data;
@@ -24,6 +24,7 @@ export class SoldeWidgetComponent {
         console.error('❌ Erreur lors de la récupération des comptes :', error);
       }
     );
+
   }
   calculerTotalSolde(): void {
     this.totalSolde = this.comptes.reduce(
@@ -32,4 +33,5 @@ export class SoldeWidgetComponent {
     );
     console.log('💰 Total des soldes :', this.totalSolde);
   }
+
 }
