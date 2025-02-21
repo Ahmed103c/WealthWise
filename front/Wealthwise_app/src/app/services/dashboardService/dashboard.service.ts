@@ -8,9 +8,11 @@ import { DepensePieChartComponent } from '../../pages/dashboard/widgets/depense-
 import { GoalsComponent } from '../../pages/dashboard/widgets/goals/goals.component';
 import { DepenseGraphComponent } from '../../pages/dashboard/widgets/depense-graph/depense-graph.component';
 import { NotificationsComponent } from '../../pages/dashboard/widgets/notifications/notifications.component';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class DashboardService {
+  constructor(private authservice: AuthService) {}
   widgets = signal<Widget[]>([
     {
       id: 1,
@@ -69,5 +71,5 @@ export class DashboardService {
       color: 'whitesmoke',
     },
   ]);
-  constructor() {}
+ 
 }
