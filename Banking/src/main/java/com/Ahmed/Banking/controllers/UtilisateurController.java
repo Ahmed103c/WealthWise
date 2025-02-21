@@ -14,9 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
-
-
 import java.util.List;
+
 @Tag(name = "Utilisateur", description = "Endpoints pour la gestion des utilisateurs")
 @RestController
 @RequestMapping("/utilisateurs")
@@ -24,36 +23,31 @@ import java.util.List;
 public class UtilisateurController {
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;  // Injection de JwtTokenProvider
+    private JwtTokenProvider jwtTokenProvider;  // Injection du JwtTokenProvider
 
     @Autowired
-    private UtilisateurService service;  // Injection de ton service utilisateur
+    private UtilisateurService service;  // Injection du service utilisateur
 
     @PostMapping("/")
-    public ResponseEntity<Integer> save(@RequestBody UtilisateurDto utilisateurDto)
-    {
-        return ResponseEntity.ok(service.save(utilisateurDto)); //si y a exception elle sera levée directement
+    public ResponseEntity<Integer> save(@RequestBody UtilisateurDto utilisateurDto) {
+        return ResponseEntity.ok(service.save(utilisateurDto));
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<UtilisateurDto>> findAll()
-    {
+    public ResponseEntity<List<UtilisateurDto>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{utilisateur-id}")
-    public ResponseEntity<UtilisateurDto> findById(@PathVariable("utilisateur-id") Integer id )
-    {
+    public ResponseEntity<UtilisateurDto> findById(@PathVariable("utilisateur-id") Integer id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @DeleteMapping("/{utilisateur-id}")
-    public ResponseEntity<Void> delete(@PathVariable("utilisateur-id") Integer id )
-    {
+    public ResponseEntity<Void> delete(@PathVariable("utilisateur-id") Integer id) {
         service.delete(id);
         return ResponseEntity.accepted().build();
     }
-
 
     @Operation(summary = "Authentification utilisateur", description = "Permet de se connecter et récupérer un JWT.")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -63,10 +57,9 @@ public class UtilisateurController {
 
         try {
             UtilisateurDto utilisateur = service.findByMail(email);
-
             if (utilisateur != null && isPasswordValid(password, utilisateur.getMotDePasse())) {
-                String token = jwtTokenProvider.generateToken(email);
-
+                // Génération du token en incluant l'ID utilisateur
+                String token = jwtTokenProvider.generateToken(email, utilisateur.getId());
                 Map<String, String> response = new HashMap<>();
                 response.put("token", token);
                 return ResponseEntity.ok(response);
@@ -78,11 +71,8 @@ public class UtilisateurController {
         }
     }
 
-
-
-    // Méthode pour vérifier si le mot de passe est valide (à adapter selon ta logique de hachage)
+    // Vérification simple du mot de passe (à remplacer par une logique de hachage sécurisée en production)
     private boolean isPasswordValid(String inputPassword, String storedPassword) {
-        // Utiliser par exemple BCrypt pour comparer le mot de passe
-        return inputPassword.equals(storedPassword);  // Remplace par la méthode de validation adéquate (par exemple, BCrypt)
+        return inputPassword.equals(storedPassword);
     }
 }
