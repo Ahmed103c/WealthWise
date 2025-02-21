@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import {jwtDecode } from 'jwt-decode';  // Import correct de jwt-decode (export par défaut)
+import { map, Observable } from 'rxjs';
+import { jwtDecode } from 'jwt-decode'; // Import correct de jwt-decode (export par défaut)
 
 @Injectable({
   providedIn: 'root',
@@ -100,6 +100,11 @@ export class AuthService {
     );
 
     return this.http.get<any>(url);
+  }
+  getComptesIdsByUserId(): Observable<number[]> {
+    return this.getComptesByUserId().pipe(
+      map((comptes) => comptes.map((compte: any) => compte.id)) // Extraction des IDs
+    );
   }
   getTransactionsByComptesId(comptesId: number): Observable<any> {
     const url = `http://localhost:8070/transactions/compte/${comptesId}`;
