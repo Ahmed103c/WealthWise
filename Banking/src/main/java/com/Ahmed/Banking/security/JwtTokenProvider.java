@@ -4,58 +4,73 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
-
-
-
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    // Définir la clé secrète pour signer le JWT
-    private String SECRET_KEY = "bembliwiem2025/2026longsecurekeyforjwt1234567891011"; // Remplace cette valeur par une clé plus sécurisée en production
+    // Clé secrète pour signer le JWT – à sécuriser en production
+    private String SECRET_KEY = "bembliwiem2025/2026longsecurekeyforjwt1234567891011";
 
     private long validityInMilliseconds = 3600000L; // 1 heure
 
-    // Méthode pour générer le token JWT
-    public String generateToken(String email) {
+    // Génère le token JWT en incluant l'email et l'ID utilisateur
+    public String generateToken(String email, Integer userId) {
         try {
             String token = Jwts.builder()
-                    .setSubject(email)  // L'email est mis comme "subject" dans le token
-                    .setIssuedAt(new Date())  // Date de création du token
+                    .setSubject(email)                        // L'email comme "subject"
+                    .claim("userId", userId)                   // Ajout du claim userId
+                    .setIssuedAt(new Date())                   // Date de création du token
                     .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))  // Date d'expiration
-                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)  // Utilise la clé secrète et l'algorithme HS256
-                    .compact();  // Génére le token
-
-            // Log pour vérifier que le token est bien généré
+                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)  // Signature
+                    .compact();
             System.out.println("Generated Token: " + token);
-
             return token;
         } catch (Exception e) {
-            throw new RuntimeException("Error generating JWT token", e);  // Lance une exception en cas d'erreur
+            throw new RuntimeException("Error generating JWT token", e);
         }
     }
 
-    // Méthode pour valider un token JWT
+    // Valide le token JWT
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)  // Utilise la clé secrète pour valider le token
+                    .setSigningKey(SECRET_KEY)
                     .build()
                     .parseClaimsJws(token);
-            return true; // Le token est valide
+            return true;
         } catch (Exception e) {
-            return false; // Le token n'est pas valide
+            return false;
         }
     }
 
-    // Méthode pour obtenir le nom d'utilisateur (email) du token JWT
+    // Extrait l'email (subject) du token JWT
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)  // Utilise la clé secrète pour extraire les informations
+                .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject(); // Retourne l'email du sujet
+        return claims.getSubject();
+    }
+
+    // Extrait l'ID utilisateur du token JWT
+    public Integer getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        Object userIdClaim = claims.get("userId");
+        if (userIdClaim instanceof Number) {
+            return ((Number) userIdClaim).intValue();
+        } else if (userIdClaim instanceof String) {
+            try {
+                return Integer.parseInt((String) userIdClaim);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
     }
 }
