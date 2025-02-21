@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -11,6 +11,7 @@ export interface Budget {
   id?: number;
   utilisateur: Utilisateur;
   montantAlloue: number;
+  // Vous pouvez ajouter d'autres champs (ex. startDate, endDate, période) si nécessaire
 }
 
 export interface BudgetCategorie {
@@ -24,7 +25,6 @@ export interface BudgetCategorie {
   providedIn: 'root'
 })
 export class BudgetService {
-  // Corrigé : Ajout du préfixe "api"
   private apiUrl = 'http://localhost:8070/api/budget';
 
   constructor(private http: HttpClient) {}
@@ -40,21 +40,21 @@ export class BudgetService {
     return this.http.get<Budget[]>(`${this.apiUrl}/${utilisateurId}`)
       .pipe(catchError(this.handleError));
   }
-  
+
   // Allouer un budget à une catégorie
   allouerBudget(budgetId: number, categorieId: number, montant: number): Observable<BudgetCategorie> {
-    let params = new HttpParams()
-      .set('budgetId', budgetId)
-      .set('categorieId', categorieId)
-      .set('montant', montant);
-      
+    // Les paramètres sont envoyés en query string
+    const params = {
+      budgetId: budgetId.toString(),
+      categorieId: categorieId.toString(),
+      montant: montant.toString()
+    };
     return this.http.post<BudgetCategorie>(`${this.apiUrl}/allouer`, null, { params })
       .pipe(catchError(this.handleError));
   }
 
-  // Gestion des erreurs HTTP
   private handleError(error: HttpErrorResponse) {
-    console.error('Erreur API :', error);
+    console.error('Erreur API:', error);
     return throwError(() => new Error('Une erreur est survenue, veuillez réessayer.'));
   }
 }

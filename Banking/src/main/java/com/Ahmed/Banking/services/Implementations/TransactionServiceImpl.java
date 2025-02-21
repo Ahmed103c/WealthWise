@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -241,10 +242,19 @@ public class TransactionServiceImpl implements TransactionService {
         return TransactionDto.fromEntity(transaction);
     }
 
-
     @Override
     public List<TransactionDto> getTransactionsByCompteId(Integer compteId) {
-        return List.of();
+        List<Transaction> transactions = transactionRepository.findByCompteId(compteId);
+        return transactions.stream()
+                .map(TransactionDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<TransactionDto> getTransactionsByUserId(Integer userId) {
+        List<Transaction> transactions = transactionRepository.findTransactionsByUserId(userId);
+        return transactions.stream()
+                .map(TransactionDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     // ✅ CSV IMPORT FUNCTIONALITY

@@ -13,7 +13,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent }, // ✅ Vérifier que la route existe
   { path: 'register', component: RegisterComponent },
   { path: 'transactions', component: TransactionComponent },
-
   {
     path: 'main',
     component: MainLayoutComponent,

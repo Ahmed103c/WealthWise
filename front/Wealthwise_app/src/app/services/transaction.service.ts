@@ -5,41 +5,40 @@ import { Observable } from 'rxjs';
 export interface Transaction {
   id?: number;
   compteId: number;
-  date: string;
-  description: string;
-  montant: number;
-  type: string; // "credit" or "debit"
+  transactionDate: string; // Format ISO (ex: "2023-09-05T00:00:00.000Z")
+  description?: string;
+  amount: number;
+  type: string; // "credit" ou "debit"
+  // Optionnellement, vous pouvez ajouter recurrenceFrequency, recurrenceEnd, categoryId, etc.
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionService {
-  private apiUrl = 'http://localhost:8080/transactions';
+  private apiUrl = 'http://localhost:8070/transactions';
 
   constructor(private http: HttpClient) {}
 
-  // Add a new transaction
+  // Ajoute une nouvelle transaction
   addTransaction(transaction: Transaction): Observable<Transaction> {
     return this.http.post<Transaction>(this.apiUrl, transaction);
   }
 
-  // Get transactions by account ID
+  // Récupère les transactions pour un compte donné
   getTransactionsByCompte(compteId: number): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/compte/${compteId}`);
   }
 
-  // Import transactions from CSV
+  // Importer des transactions depuis un fichier CSV
   importTransactions(file: File): Observable<string> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<string>(`${this.apiUrl}/import`, formData);
   }
 
-  // Export transactions to CSV
+  // Exporter les transactions en CSV
   exportTransactions(): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/export`, {
-      responseType: 'blob',
-    });
+    return this.http.get(`${this.apiUrl}/export`, { responseType: 'blob' });
   }
 }

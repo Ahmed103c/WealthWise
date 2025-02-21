@@ -1,92 +1,104 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { BudgetService, Budget } from '../../services/budget.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
-import { NgChartsModule } from 'ng2-charts'; // ✅ Correct import pour Angular 19 standalone
-import { ChartConfiguration, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-budget',
   standalone: true,
-  templateUrl: './budget.component.html',
-  styleUrls: ['./budget.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, NgFor, NgIf, NgChartsModule] // ✅ Correct imports
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="budget-container">
+      <h2>Créer un budget</h2>
+      <form (ngSubmit)="creerBudget()">
+        <div>
+          <label for="montantAlloue">Montant Alloué :</label>
+          <input type="number" id="montantAlloue" name="montantAlloue"
+                 [(ngModel)]="budget.montantAlloue" required>
+        </div>
+        <button type="submit">Créer Budget</button>
+      </form>
+      <div *ngIf="message" class="message">{{ message }}</div>
+      <hr>
+      <h2>Liste des Budgets</h2>
+      <div *ngIf="budgets && budgets.length; else noBudget">
+        <ul>
+          <li *ngFor="let budget of budgets">
+            <strong>ID :</strong> {{ budget.id }} -
+            <strong>Montant Alloué :</strong> {{ budget.montantAlloue | currency }}
+          </li>
+        </ul>
+      </div>
+      <ng-template #noBudget>
+        <p>Aucun budget trouvé.</p>
+      </ng-template>
+    </div>
+  `,
+  styles: [`
+    .budget-container {
+      /* Ajoutez une marge à droite pour laisser de l'espace si la navbar est en position fixe */
+      margin-right: 1000px;
+      padding:20rem;
+    }
+    h2 {
+      margin-top: 1rem;
+    }
+    form div {
+      margin-bottom: 1rem;
+    }
+    .message {
+      color: red;
+      margin-top: 1rem;
+    }
+  `]
 })
 export class BudgetComponent implements OnInit {
-  budgetTotal: number = 0;
-  budgets: any[] = [];
-  categories: { nom: string; montant: number }[] = [];
-  utilisateurId: number = 1; // 🔥 Remplace avec l'ID utilisateur réel
-  message: string = '';
-
-  // ✅ Données du graphique
-  pieChartData: ChartConfiguration<'pie'>['data'] = {
-    labels: [],
-    datasets: [{ data: [], backgroundColor: ['#845162', '#29104A', '#522C5D', '#D88EA2'] }]
+  // Initialisation par défaut pour éviter que "budget" soit undefined lors du rendu
+  budget: Budget = {
+    utilisateur: { id: 0 },
+    montantAlloue: 0
   };
-  pieChartType: ChartType = 'pie';
+  budgets: Budget[] = [];
+  message: string = '';
 
   constructor(
     private authService: AuthService,
-    private budgetService: BudgetService,
-    private router: Router
+    private budgetService: BudgetService
   ) {}
 
-  ngOnInit() {
-    this.loadBudgets();
+  ngOnInit(): void {
+    const userId = this.authService.getUserIdFromToken();
+    if (!userId) {
+      this.message = 'Utilisateur non authentifié.';
+      return;
+    }
+    this.budget.utilisateur.id = userId;
+    this.loadBudgets(userId);
   }
 
-  // ✅ Charger les budgets
-  loadBudgets() {
-    this.budgetService.getBudgets(this.utilisateurId).subscribe({
-      next: (data) => {
-        if (Array.isArray(data)) {
-          this.budgets = data;
-        } else {
-          this.message = "⚠️ Aucun budget trouvé.";
-        }
-      },
-      error: (err) => {
-        this.message = "❌ Erreur lors du chargement des budgets.";
-        console.error(err);
-      }
-    });
-  }
-
-  // ✅ Créer un budget
-  creerBudget() {
-    const budget: Budget = {
-      utilisateur: { id: this.utilisateurId },
-      montantAlloue: this.budgetTotal
-    };
-
-    this.budgetService.creerBudget(budget).subscribe({
+  creerBudget(): void {
+    this.budgetService.creerBudget(this.budget).subscribe({
       next: (res) => {
-        this.message = "✅ Budget créé avec succès !";
-        this.budgets.push(res);
-        this.loadBudgets();
+        this.message = 'Budget créé avec succès !';
+        this.loadBudgets(this.budget.utilisateur.id);
       },
       error: (err) => {
-        this.message = "❌ Erreur lors de la création du budget.";
+        this.message = err.message;
         console.error(err);
       }
     });
   }
 
-  ajouterCategorie() {
-    this.categories.push({ nom: '', montant: 0 });
-    this.updateChart();
-  }
-
-  supprimerCategorie(index: number) {
-    this.categories.splice(index, 1);
-    this.updateChart();
-  }
-
-  updateChart() {
-    this.pieChartData.labels = this.categories.map(c => c.nom);
-    this.pieChartData.datasets[0].data = this.categories.map(c => c.montant);
+  loadBudgets(userId: number): void {
+    this.budgetService.getBudgets(userId).subscribe({
+      next: (data) => {
+        this.budgets = data;
+      },
+      error: (err) => {
+        this.message = err.message;
+        console.error(err);
+      }
+    });
   }
 }
