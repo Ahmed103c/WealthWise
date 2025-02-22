@@ -118,6 +118,12 @@ export class DepenseGraphComponent implements OnInit {
     this.alltransactionService.allTransactions$.subscribe((transactions) => {
       console.log('📂 Transactions mises à jour :', transactions);
 
+      //les transactions de la semaine 
+      const transactionsSemaine =
+        this.filterTransactionsByCurrentWeek(transactions);
+      console.log(transactionsSemaine);
+
+
       if (!this.chart || !this.chart.nativeElement) {
         console.error("L'élément canvas du graphique est introuvable !");
         return;
@@ -133,7 +139,7 @@ export class DepenseGraphComponent implements OnInit {
       let gains = new Array(7).fill(0);
 
       // Remplissage des données en fonction des transactions
-      transactions.forEach((transaction) => {
+      transactionsSemaine.forEach((transaction) => {
         const jourIndex = this.getJourIndex(transaction.transactionDate); // Fonction pour récupérer l'index du jour
         console.log(jourIndex);
         if (transaction.amount < 0) {
@@ -205,7 +211,39 @@ export class DepenseGraphComponent implements OnInit {
 
   getJourIndex(dateString: string): number {
     const date = new Date(dateString); // Convertir la string en objet Date
-    const jour = date.getDay(); // Récupérer le jour (0 = Dimanche, 1 = Lundi, etc.)
-    return jour === 0 ? 6 : jour - 1; // Adapter pour ['Lun', 'Mar', ...] (lundi = index 0)
+    const jour = date.getDay();        // Récupérer le jour (0 = Dimanche, 1 = Lundi, etc.)
+    return jour === 0 ? 6 : jour - 1;  // Adapter pour ['Lun', 'Mar', ...] (lundi = index 0)
   }
+
+  getStartOfWeek(): Date {
+    const today = new Date();
+    const dayOfWeek = today.getDay();                  // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si dimanche, on recule de 6 jours
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() + diff);       // On ajuste la date pour obtenir le lundi
+
+    startOfWeek.setHours(0, 0, 0, 0);                 // On remet à minuit pour éviter les erreurs
+    return startOfWeek;
+  }
+
+  getEndOfWeek(): Date {
+    const startOfWeek = this.getStartOfWeek();
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);    // Dimanche = Lundi + 6 jours
+
+    endOfWeek.setHours(23, 59, 59, 999);             // Fin de la journée
+    return endOfWeek;
+  }
+
+  filterTransactionsByCurrentWeek(transactions: any[]): any[] {
+    const startOfWeek = this.getStartOfWeek();
+    const endOfWeek = this.getEndOfWeek();
+
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.transactionDate);
+      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+    });
+  }
+  
 }

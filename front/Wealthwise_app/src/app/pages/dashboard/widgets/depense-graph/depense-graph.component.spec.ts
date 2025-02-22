@@ -21,3 +21,4 @@ describe('DepenseGraphComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
