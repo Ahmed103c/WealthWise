@@ -63,7 +63,7 @@ export class DepositWidgetComponent {
         // Fusionner toutes les transactions en une seule liste
         this.transactions = transactionsArray.flat();
         console.log('📥 Transactions combinées :', this.transactions);
-
+        
         // Calculer le dépôt total
         this.deposit = this.calculateTotalPositiveAmount(this.transactions);
       },

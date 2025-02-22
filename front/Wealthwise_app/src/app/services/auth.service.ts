@@ -68,6 +68,7 @@ export class AuthService {
     }
     return null;
   }
+  
 
   // Stocke le token dans le localStorage
   storeToken(token: string): void {
