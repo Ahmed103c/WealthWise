@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8070/utilisateurs'; 
+  private apiUrl = 'http://localhost:8070/utilisateurs';
+  private apiUrl2 = 'http://localhost:8070';
 
-  private http = inject(HttpClient); 
+  private http = inject(HttpClient);
 
   /**
    * Effectue une requête POST pour authentifier l'utilisateur.
@@ -42,4 +43,28 @@ export class UserService {
   setToken(token: string): void {
     localStorage.setItem('userToken', token);
   }
+  /**
+   * Récupère les informations du profil de l'utilisateur connecté.
+   * @returns Un Observable contenant les informations de l'utilisateur.
+   */// Modifier selon ton backend
+
+  getUserProfile(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/profil/${userId}`);
+  }
+
+  /**
+   * Ajoute un compte bancaire pour l'utilisateur.
+   */
+  ajouterCompte(compte: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/comptes`, compte);
+  }
+  authenticateWithGoCardless(userId: number) {
+    return this.http.post(`${this.apiUrl2}/api/comptes/authenticate/${userId}`, {});
+  }
+
+  fetchAccountsFromGoCardless(requisitionId: string, userId: number) {
+    return this.http.post(`${this.apiUrl2}/api/comptes/fetch-accounts/${requisitionId}/${userId}`, {});
+  }
+
+
 }

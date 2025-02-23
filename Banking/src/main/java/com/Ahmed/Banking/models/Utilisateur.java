@@ -35,4 +35,5 @@ public class Utilisateur {
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
+
 }
