@@ -6,6 +6,7 @@ import com.Ahmed.Banking.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -75,4 +76,40 @@ public class CompteController {
             return ResponseEntity.badRequest().body("❌ Error fetching transactions: " + e.getMessage());
         }
     }
+    // ✅ Endpoint pour créer un compte conjoint
+    @PostMapping("/conjoint")
+    public ResponseEntity<Compte> creerCompteConjoint(
+            @RequestParam String nom,
+            @RequestParam String externalId,
+            @RequestParam String institution,
+            @RequestParam String iban,
+            @RequestParam(required = false) String currency,
+            @RequestParam(required = false) BigDecimal balance,
+            @RequestParam Integer proprietaireId,
+            @RequestParam List<String> emailsUtilisateurs,
+            @RequestParam List<BigDecimal> partsMontants) {
+
+        System.out.println("🚀 Création d'un compte conjoint avec toutes les infos");
+
+        Compte compte = compteService.creerCompteConjoint(
+                nom, externalId, institution, iban, currency, balance,
+                proprietaireId, emailsUtilisateurs, partsMontants);
+
+        return ResponseEntity.ok(compte);
+    }
+
+
+    // ✅ Endpoint pour ajouter un utilisateur à un compte conjoint
+    @PostMapping("/{compteId}/ajouter-utilisateur")
+    public ResponseEntity<String> ajouterUtilisateurCompteConjoint(
+            @PathVariable Integer compteId,
+            @RequestParam String email,
+            @RequestParam BigDecimal partMontant) {
+
+        System.out.println("🚀 Ajout d'un utilisateur " + email + " au compte " + compteId);
+
+        compteService.ajouterUtilisateurCompteConjoint(compteId, email, partMontant);
+        return ResponseEntity.ok("✅ Utilisateur ajouté au compte conjoint !");
+    }
+
 }
