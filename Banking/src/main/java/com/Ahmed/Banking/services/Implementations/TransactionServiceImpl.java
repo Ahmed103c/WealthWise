@@ -1,12 +1,8 @@
 package com.Ahmed.Banking.services.Implementations;
 
 import com.Ahmed.Banking.models.*;
-import com.Ahmed.repositories.CategoryRepository;
-import com.Ahmed.repositories.CompteRepository;
-import com.Ahmed.repositories.BudgetCategorieRepository;
-import com.Ahmed.repositories.UtilisateurRepository;
+import com.Ahmed.repositories.*;
 
-import com.Ahmed.repositories.TransactionRepository;
 import com.Ahmed.Banking.dto.TransactionDto;
 import com.Ahmed.Banking.services.TransactionService;
 import jakarta.transaction.Transactional;
@@ -37,21 +33,25 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CompteRepository compteRepository;
+    private final PartCompteRepository partCompteRepository; // ✅ Ajout du repository
+
     private final CategoryRepository categoryRepository;
     private final BudgetCategorieRepository budgetCategorieRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final RestTemplate restTemplate;
+
     private final CategoryService categoryService; // ✅ Ajout du service de catégorisation
 
 
     public TransactionServiceImpl(TransactionRepository transactionRepository,
-                                  CompteRepository compteRepository,
+                                  CompteRepository compteRepository, PartCompteRepository partCompteRepository,
                                   CategoryRepository categoryRepository,
                                   BudgetCategorieRepository budgetCategorieRepository,
                                   UtilisateurRepository utilisateurRepository,
                                   RestTemplate restTemplate, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
         this.compteRepository = compteRepository;
+        this.partCompteRepository = partCompteRepository;
         this.categoryRepository = categoryRepository;
         this.budgetCategorieRepository = budgetCategorieRepository;
         this.utilisateurRepository = utilisateurRepository;
@@ -321,4 +321,29 @@ public class TransactionServiceImpl implements TransactionService {
             throw new RuntimeException("Échec de l'exportation en CSV : " + e.getMessage());
         }
     }
+    @Transactional
+    public void repartitionnerTransaction(Integer compteId, BigDecimal montantTransaction) {
+        // 🔥 Vérifier que le compte existe
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("❌ Compte introuvable !"));
+
+        if (!compte.isCompteConjoint()) {
+            throw new RuntimeException("❌ Ce compte n'est pas un compte conjoint !");
+        }
+
+        // 🔥 Récupérer les parts des utilisateurs
+        List<PartCompte> parts = partCompteRepository.findByCompteId(compteId);
+
+        for (PartCompte partCompte : parts) {
+            // 🔥 Calculer la part de la transaction pour cet utilisateur
+            BigDecimal montantUtilisateur = montantTransaction.multiply(partCompte.getPourcentage()).divide(BigDecimal.valueOf(100));
+
+            // 🔥 Ajouter au solde de l'utilisateur
+            Utilisateur utilisateur = partCompte.getUtilisateur();
+            utilisateur.setBalance(utilisateur.getBalance().add(montantUtilisateur));
+
+            utilisateurRepository.save(utilisateur);
+        }
+    }
+
 }

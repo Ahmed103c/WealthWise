@@ -1,16 +1,20 @@
 package com.Ahmed.Banking.services.Implementations;
 
 import com.Ahmed.Banking.models.Compte;
+import com.Ahmed.Banking.models.PartCompte;
 import com.Ahmed.Banking.models.Transaction;
 import com.Ahmed.Banking.models.Utilisateur;
 import com.Ahmed.repositories.CompteRepository;
+import com.Ahmed.repositories.PartCompteRepository;
 import com.Ahmed.repositories.TransactionRepository;
 import com.Ahmed.repositories.UtilisateurRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -21,6 +25,8 @@ public class CompteService {
     private final CompteRepository compteRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final TransactionRepository transactionRepository;
+    private final PartCompteRepository partCompteRepository; // ✅ Ajout du repository
+
 
     private static final String BASE_URL = "https://bankaccountdata.gocardless.com/api/v2";
     private static final String SECRET_ID = "2f7225b9-c4a2-4099-b607-3e4b45013428";  // 🔥 Replace with real credentials
@@ -28,11 +34,12 @@ public class CompteService {
     private static final String SANDBOX_INSTITUTION_ID = "SANDBOXFINANCE_SFIN0000";
 
     public CompteService(RestTemplate restTemplate, CompteRepository compteRepository,
-                         UtilisateurRepository utilisateurRepository, TransactionRepository transactionRepository) {
+                         UtilisateurRepository utilisateurRepository, TransactionRepository transactionRepository, PartCompteRepository partCompteRepository) {
         this.restTemplate = restTemplate;
         this.compteRepository = compteRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.transactionRepository = transactionRepository;
+        this.partCompteRepository = partCompteRepository;
     }
 
     public Compte saveCompte(Compte compte) {
@@ -308,5 +315,222 @@ public class CompteService {
             throw new RuntimeException("❌ Impossible de récupérer les transactions");
         }
     }
+    @Transactional
+    public Compte creerCompteConjoint(
+            String nom,
+            String externalId,
+            String institution,
+            String iban,
+            String currency,
+            BigDecimal balance,
+            Integer proprietaireId,
+            List<String> emailsUtilisateurs,
+            List<BigDecimal> partsMontants) {
+
+        System.out.println("🛠️ [DEBUG] - Création du compte conjoint...");
+
+        if (emailsUtilisateurs.size() != partsMontants.size()) {
+            throw new RuntimeException("❌ Le nombre d'e-mails doit correspondre au nombre de parts !");
+        }
+
+        // 🔥 Vérifier si le propriétaire existe
+        Utilisateur proprietaire = utilisateurRepository.findById(proprietaireId)
+                .orElseThrow(() -> new RuntimeException("❌ Propriétaire introuvable !"));
+
+        // 🔥 Création du compte conjoint avec toutes les infos
+        Compte compte = Compte.builder()
+                .nom(nom)
+                .externalId(externalId)
+                .institution(institution)
+                .iban(iban)
+                .currency(currency != null ? currency : "EUR") // Défaut: EUR
+                .balance(balance != null ? balance : BigDecimal.ZERO) // Défaut: 0
+                .isConjoint(true)
+                .build();
+
+        System.out.println("🛠️ [DEBUG] - Compte initialisé avec solde: " + compte.getBalance());
+
+        compte = compteRepository.save(compte);
+
+        // ✅ Ajouter le propriétaire avec 100% au début
+        PartCompte partProprietaire = PartCompte.builder()
+                .compte(compte)
+                .utilisateur(proprietaire)
+                .pourcentage(BigDecimal.valueOf(100))
+                .build();
+        partCompteRepository.save(partProprietaire);
+
+        System.out.println("🛠️ [DEBUG] - Propriétaire ajouté avec 100% de part");
+
+        // ✅ Ajouter les autres utilisateurs
+        for (int i = 0; i < emailsUtilisateurs.size(); i++) {
+            String email = emailsUtilisateurs.get(i);
+            BigDecimal partMontant = partsMontants.get(i);
+
+            Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("❌ Utilisateur avec l'e-mail " + email + " introuvable !"));
+
+            // Ajouter l'utilisateur
+            PartCompte partCompte = PartCompte.builder()
+                    .compte(compte)
+                    .utilisateur(utilisateur)
+                    .pourcentage(partMontant)
+                    .build();
+            partCompteRepository.save(partCompte);
+
+            System.out.println("🛠️ [DEBUG] - Utilisateur " + email + " ajouté avec part: " + partMontant);
+        }
+
+        // ✅ Mettre à jour les balances des utilisateurs en fonction des parts
+        mettreAJourBalancesUtilisateurs(compte);
+
+        System.out.println("✅ Compte conjoint créé avec solde final: " + compte.getBalance());
+        return compte;
+    }
+
+    @Transactional
+    public void ajouterUtilisateurCompteConjoint(Integer compteId, String email, BigDecimal partMontant) {
+        // 🔥 Vérifier si le compte existe et est bien conjoint
+        Compte compte = compteRepository.findById(compteId)
+                .orElseThrow(() -> new RuntimeException("❌ Compte introuvable !"));
+
+        if (!compte.isConjoint()) {
+            throw new RuntimeException("❌ Ce compte n'est pas un compte conjoint !");
+        }
+
+        // 🔥 Vérifier si l'utilisateur existe
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("❌ Utilisateur avec l'e-mail " + email + " introuvable !"));
+
+        // 🔥 Vérifier si l'utilisateur est déjà associé au compte
+        Optional<PartCompte> partCompteOpt = partCompteRepository.findByCompteIdAndUtilisateurId(compte.getId(), utilisateur.getId());
+        if (partCompteOpt.isPresent()) {
+            throw new RuntimeException("⚠️ Cet utilisateur fait déjà partie du compte !");
+        }
+
+        // ✅ Ajouter la nouvelle part
+        PartCompte nouvellePart = PartCompte.builder()
+                .compte(compte)
+                .utilisateur(utilisateur)
+                .pourcentage(partMontant)
+                .build();
+
+        partCompteRepository.save(nouvellePart);
+
+        // ✅ Recalculer les parts de **tous** les utilisateurs
+        recalculerPartProprietaire(compte);
+
+        // ✅ Mettre à jour les balances de tous les utilisateurs du compte conjoint
+        mettreAJourBalancesUtilisateurs(compte);
+
+        System.out.println("✅ Utilisateur " + utilisateur.getEmail() + " ajouté au compte " + compte.getNom());
+    }
+    @Transactional
+    public void recalculerPartProprietaire(Compte compte) {
+        List<PartCompte> parts = partCompteRepository.findByCompteId(compte.getId());
+
+        // ✅ Somme des parts déjà attribuées aux autres utilisateurs
+        BigDecimal sommeParts = parts.stream()
+                .filter(p -> !p.getUtilisateur().getId().equals(compte.getUtilisateur().getId())) // Exclure le créateur
+                .map(PartCompte::getPourcentage)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // ✅ Vérifier qu'on ne dépasse pas 100%
+        if (sommeParts.compareTo(new BigDecimal("100")) >= 0) {
+            throw new RuntimeException("❌ La somme des parts ne peut pas dépasser 100% !");
+        }
+
+        // ✅ Mise à jour de la part du créateur
+        Optional<PartCompte> partOpt = partCompteRepository.findByCompteIdAndUtilisateurId(compte.getId(), compte.getUtilisateur().getId());
+
+        PartCompte partProprietaire = partOpt.orElseGet(() -> {
+            PartCompte nouvellePart = PartCompte.builder()
+                    .compte(compte)
+                    .utilisateur(compte.getUtilisateur())
+                    .pourcentage(BigDecimal.ZERO) // ✅ Mettre 0% temporairement
+                    .build();
+            return partCompteRepository.save(nouvellePart);
+        });
+
+        BigDecimal nouvellePart = new BigDecimal("100").subtract(sommeParts);
+        partProprietaire.setPourcentage(nouvellePart);
+        partCompteRepository.save(partProprietaire);
+    }
+    @Transactional
+    public void mettreAJourBalancesUtilisateurs(Compte compte) {
+        // 🔍 Assurez-vous que le compte est bien conjoint
+        if (!compte.isConjoint()) {
+            System.out.println("⚠️ [DEBUG] - Le compte " + compte.getId() + " n'est pas un compte conjoint.");
+            return;
+        }
+
+        // 🔍 Récupérer toutes les parts associées à ce compte
+        List<PartCompte> parts = partCompteRepository.findByCompteId(compte.getId());
+
+        if (parts.isEmpty()) {
+            System.out.println("⚠️ [DEBUG] - Aucun utilisateur associé au compte " + compte.getId());
+            return;
+        }
+
+        BigDecimal soldeTotal = compte.getBalance();
+        System.out.println("🛠️ [DEBUG] - Mise à jour des balances des utilisateurs du compte " + compte.getId() + " avec solde total: " + soldeTotal);
+
+        for (PartCompte part : parts) {
+            Utilisateur utilisateur = part.getUtilisateur();
+            if (utilisateur != null) {
+                // 🔥 Calculer la part correcte du solde
+                BigDecimal partMontant = soldeTotal
+                        .multiply(part.getPourcentage().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+
+                System.out.println("🛠️ [DEBUG] - Mise à jour balance de " + utilisateur.getEmail() + " avec: " + partMontant);
+
+                utilisateur.setBalance(partMontant);
+                utilisateurRepository.save(utilisateur);
+            } else {
+                System.out.println("❌ [ERROR] - L'utilisateur associé à la part " + part.getId() + " est null !");
+            }
+        }
+    }
+
+    /**
+     * ✅ Ajoute de nouveaux utilisateurs à un compte conjoint et recalcule les parts.
+     */
+    @Transactional
+    public void ajouterUtilisateursEtRecalculerParts(Compte compte, List<String> emailsUtilisateurs, List<BigDecimal> partsMontants) {
+        if (emailsUtilisateurs == null || partsMontants == null || emailsUtilisateurs.isEmpty()) {
+            return; // Rien à ajouter
+        }
+
+        for (int i = 0; i < emailsUtilisateurs.size(); i++) {
+            String email = emailsUtilisateurs.get(i);
+            BigDecimal partMontant = partsMontants.get(i);
+
+            // 🔍 Vérifier si l'utilisateur existe
+            Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("❌ Utilisateur avec l'e-mail " + email + " introuvable !"));
+
+            // 🔍 Vérifier si l'utilisateur est déjà associé au compte
+            Optional<PartCompte> existingPart = partCompteRepository.findByCompteIdAndUtilisateurId(compte.getId(), utilisateur.getId());
+            if (existingPart.isPresent()) {
+                throw new RuntimeException("⚠️ Cet utilisateur fait déjà partie du compte !");
+            }
+
+            // ✅ Ajouter la nouvelle part
+            PartCompte partCompte = PartCompte.builder()
+                    .compte(compte)
+                    .utilisateur(utilisateur)
+                    .pourcentage(partMontant)
+                    .build();
+
+            partCompteRepository.save(partCompte);
+        }
+
+        // 🔥 Mise à jour automatique de la part du propriétaire après ajout
+        recalculerPartProprietaire(compte);
+
+        // 🔄 Mettre à jour les balances après ajout d'un utilisateur
+        mettreAJourBalancesUtilisateurs(compte);
+    }
+
 
 }
