@@ -12,14 +12,14 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent }, // ✅ Vérifier que la route existe
   { path: 'register', component: RegisterComponent },
-  { path: 'transactions', component: TransactionComponent },
   {
     path: 'main',
     component: MainLayoutComponent,
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'infoperso', component: InfopersoComponent },
-      { path: 'budget', component: BudgetComponent }
+      { path: 'app-budget', component: BudgetComponent },
+      { path: 'app-transaction', component: TransactionComponent }
     ]
   },
 ];

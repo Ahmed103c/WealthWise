@@ -1,53 +1,96 @@
 <div class="info-page">
-    <div class="info-section">
+  <div class="info-container">
+    <!-- Section Informations Personnelles -->
+    <div class="card personal-info">
+      <h2>Informations Personnelles</h2>
       <div class="info-row">
-        <label>Nom complet :</label>
-        <p *ngIf="!editMode['fullName']">{{ user.fullName }}</p>
-        <input *ngIf="editMode['fullName']" type="text" [(ngModel)]="user.fullName" />
-        <button class="edit-btn" (click)="toggleEdit('fullName')">Modifier</button>
+        <label><i class="fas fa-user"></i> Nom :</label>
+        <p>{{ user.nom }}</p>
+      </div>
+      <div class="info-row">
+        <label><i class="fas fa-user"></i> Prénom :</label>
+        <p>{{ user.prenom }}</p>
+      </div>
+      <div class="info-row">
+        <label><i class="fas fa-envelope"></i> Email :</label>
+        <p>{{ user.email }}</p>
+      </div>
+      <div class="info-row">
+        <label><i class="fas fa-wallet"></i> Balance :</label>
+        <p>{{ user.balance }}</p>
+      </div>
+    </div>
+
+    <!-- Section Comptes Bancaires -->
+    <div class="card accounts">
+      <h2>Comptes Bancaires</h2>
+      <div *ngIf="comptes.length > 0; else noAccounts">
+        <div *ngFor="let compte of comptes; let i = index" class="account-card">
+          <h3 class="account-title">Compte {{ i + 1 }}</h3>
+          <div class="info-row">
+            <label><i class="fas fa-university"></i> Institution :</label>
+            <p>{{ compte.institution }}</p>
+          </div>
+          <div class="info-row">
+            <label><i class="fas fa-id-card"></i> ID Externe :</label>
+            <p>{{ compte.externalId }}</p>
+          </div>
+          <div class="info-row">
+            <label><i class="fas fa-credit-card"></i> IBAN :</label>
+            <p>{{ compte.iban }}</p>
+          </div>
+          <div class="info-row">
+            <label><i class="fas fa-money-bill"></i> Solde :</label>
+            <p>{{ compte.balance | currency: compte.currency }}</p>
+          </div>
+          <hr *ngIf="i < comptes.length - 1" class="account-divider">
+        </div>
       </div>
 
-      <div class="info-row">
-        <label>Email :</label>
-        <p *ngIf="!editMode['email']">{{ user.email }}</p>
-        <input *ngIf="editMode['email']" type="email" [(ngModel)]="user.email" />
-        <button class="edit-btn" (click)="toggleEdit('email')">Modifier</button>
+      <ng-template #noAccounts>
+        <p>Aucun compte bancaire trouvé.</p>
+      </ng-template>
+    </div>
+
+    <!-- Bouton Ajouter un Compte -->
+    <button class="btn-primary" (click)="toggleAjoutCompte()">
+      <i class="fas fa-plus-circle"></i> {{ modeAjout ? 'Annuler' : 'Ajouter un compte' }}
+    </button>
+
+    <!-- Formulaire d'ajout de compte (dans une modale) -->
+    <div *ngIf="modeAjout" class="modal">
+      <div class="modal-content">
+        <span class="close" (click)="toggleAjoutCompte()">&times;</span>
+        <h2>Ajouter un Compte</h2>
+        <form (ngSubmit)="ajouterCompteManuel()">
+          <label for="externalId">ID Externe :</label>
+          <input type="text" id="externalId" name="externalId" [(ngModel)]="nouveauCompte.externalId" required>
+
+          <label for="institution">Institution :</label>
+          <input type="text" id="institution" name="institution" [(ngModel)]="nouveauCompte.institution" required>
+
+          <label for="iban">IBAN :</label>
+          <input type="text" id="iban" name="iban" [(ngModel)]="nouveauCompte.iban" required>
+
+          <label for="currency">Devise :</label>
+          <input type="text" id="currency" name="currency" [(ngModel)]="nouveauCompte.currency" required>
+
+          <label for="balance">Solde :</label>
+          <input type="number" id="balance" name="balance" [(ngModel)]="nouveauCompte.balance" required>
+
+          <button type="submit" class="btn-submit">Ajouter Compte</button>
+        </form>
       </div>
-
-      <div class="info-row">
-        <label>Téléphone :</label>
-        <p *ngIf="!editMode['phone']">{{ user.phone }}</p>
-        <input *ngIf="editMode['phone']" type="text" [(ngModel)]="user.phone" />
-        <button class="edit-btn" (click)="toggleEdit('phone')">Modifier</button>
-      </div>
     </div>
 
-
-  <div class="info-section">
-    <div class="info-row">
-      <label>Type de compte :</label>
-      <p>{{ user.accountType }}</p>
+    <!-- Boutons supplémentaires -->
+    <div class="actions">
+      <button class="btn-auth" (click)="authentifierAvecGoCardless()">
+        <i class="fas fa-lock"></i> Authentifier avec GoCardless
+      </button>
+      <button class="btn-fetch" (click)="verifierEtRecupererComptes()">
+        <i class="fas fa-sync"></i> Récupérer mes comptes GoCardless
+      </button>
     </div>
-
-    <div class="info-row">
-      <label>Solde :</label>
-      <p>{{ user.balance | currency:'EUR' }}</p>
-    </div>
-
-    <div class="info-row">
-      <label>IBAN :</label>
-      <p>{{ user.iban }}</p>
-    </div>
-
-    <div class="info-row">
-      <label>Vérification :</label>
-      <p [class.verified]="user.verified" [class.not-verified]="!user.verified">
-        {{ user.verified ? '✔️ Vérifié' : '❌ Non vérifié' }}
-      </p>
-    </div>
-  </div>
-
-  <div class="button-group">
-    <button class="save-btn" (click)="saveChanges()">Enregistrer les modifications</button>
   </div>
 </div>
