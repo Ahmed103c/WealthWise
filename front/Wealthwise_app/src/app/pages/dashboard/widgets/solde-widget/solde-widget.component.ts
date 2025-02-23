@@ -11,6 +11,7 @@ export class SoldeWidgetComponent {
   constructor(private authservice: AuthService) {}
   solde: number =0;
   comptes: any[] = [];
+
   totalSolde: number = 0;
   ngOnInit() {
     this.authservice.getComptesByUserId().subscribe(

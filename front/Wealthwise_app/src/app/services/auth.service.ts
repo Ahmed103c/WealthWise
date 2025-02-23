@@ -68,7 +68,6 @@ export class AuthService {
     }
     return null;
   }
-  
 
   // Stocke le token dans le localStorage
   storeToken(token: string): void {
@@ -112,6 +111,11 @@ export class AuthService {
 
     console.log('Récupération des transcations pour compte ID :', comptesId);
 
+    return this.http.get<any>(url);
+  }
+  getCategoryFromDescription(desciprtion: string): Observable<any> {
+    const url = `http://localhost:8070/api/category/predict?description=${desciprtion}`;
+    console.log(`Category : ` + this.http.get<any>(url));
     return this.http.get<any>(url);
   }
 }

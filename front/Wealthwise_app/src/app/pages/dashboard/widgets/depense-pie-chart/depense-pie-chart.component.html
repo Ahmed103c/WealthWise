@@ -1,3 +1,20 @@
 <div class="chart-container">
-    <canvas #chart></canvas>
+    <!-- {{category}} -->
+
+    <!-- <canvas #chart></canvas> -->
+
+    <!-- Message de chargement -->
+    <p *ngIf="isloading">⏳ Chargement des catégories...</p>
+
+    <!-- Liste des catégories une fois chargées -->
+    <ul *ngIf="!isloading ;">
+        @for(w of uniqueItems ; track w.name ){
+        <li>{{w.name}} : {{w.amount}}</li>
+        }
+
+    </ul>
+    <div *ngIf="!isloading">
+        <canvas #chart></canvas>
+    </div>
+
 </div>
