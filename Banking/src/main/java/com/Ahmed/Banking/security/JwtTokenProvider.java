@@ -56,21 +56,10 @@ public class JwtTokenProvider {
 
     // Extrait l'ID utilisateur du token JWT
     public Integer getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
-                .build()
                 .parseClaimsJws(token)
                 .getBody();
-        Object userIdClaim = claims.get("userId");
-        if (userIdClaim instanceof Number) {
-            return ((Number) userIdClaim).intValue();
-        } else if (userIdClaim instanceof String) {
-            try {
-                return Integer.parseInt((String) userIdClaim);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-        return null;
+        return claims.get("userId", Integer.class);  // 🔹 Extraction directe de l'ID utilisateur
     }
 }

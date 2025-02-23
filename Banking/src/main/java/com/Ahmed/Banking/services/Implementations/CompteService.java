@@ -47,6 +47,12 @@ public class CompteService {
             throw new IllegalArgumentException("Le compte doit être associé à un utilisateur !");
         }
 
+        // Vérifier si un compte avec le même External ID existe déjà
+        Optional<Compte> existingCompte = compteRepository.findByExternalId(compte.getExternalId());
+        if (existingCompte.isPresent()) {
+            throw new RuntimeException("❌ Un compte avec cet External ID existe déjà !");
+        }
+
         // Vérifier si l'utilisateur existe
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findById(compte.getUtilisateur().getId());
         if (utilisateurOpt.isEmpty()) {
@@ -54,19 +60,18 @@ public class CompteService {
         }
 
         Utilisateur utilisateur = utilisateurOpt.get();
-
-        // ✅ Vérification et conversion avec BigDecimal
         BigDecimal compteBalance = compte.getBalance() != null ? compte.getBalance() : BigDecimal.ZERO;
         BigDecimal utilisateurBalance = utilisateur.getBalance() != null ? utilisateur.getBalance() : BigDecimal.ZERO;
 
-        // ✅ Mettre à jour le solde total
+        // Mettre à jour le solde total
         utilisateurBalance = utilisateurBalance.add(compteBalance);
         utilisateur.setBalance(utilisateurBalance);
 
-        // ✅ Enregistrer l'utilisateur et le compte
+        // Enregistrer l'utilisateur et le compte
         utilisateurRepository.save(utilisateur);
         return compteRepository.save(compte);
     }
+
 
     // ✅ OPTION 2: Get All User Accounts
     public List<Compte> getComptesByUtilisateurId(Integer userId) {
@@ -92,7 +97,7 @@ public class CompteService {
     }
 
     // ✅ STEP 2: Automate Account Fetching
-    public String automateCompteFetching(Integer userId) {
+    public Map<String, String> automateCompteFetching(Integer userId) {
         String accessToken = getAccessToken();
         String agreementId = createAgreement(accessToken);
         if (agreementId == null) {
@@ -120,7 +125,7 @@ public class CompteService {
         return response.getBody() != null ? (String) response.getBody().get("id") : null;
     }
 
-    public String createRequisition(String accessToken, String agreementId) {
+    public Map<String, String> createRequisition(String accessToken, String agreementId) {
         String url = BASE_URL + "/requisitions/";
         Map<String, Object> payload = Map.of(
                 "redirect", "http://www.yourwebpage.com",
@@ -136,12 +141,16 @@ public class CompteService {
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
         if (response.getStatusCode() == HttpStatus.CREATED && response.getBody() != null) {
-            String requisitionId = (String) response.getBody().get("id"); // ✅ Store requisition ID
+            String requisitionId = (String) response.getBody().get("id");  // ✅ Récupérer l'ID de la réquisition
             String authenticationLink = (String) response.getBody().get("link");
 
-            System.out.println("🆔 Requisition ID: " + requisitionId); // ✅ Log this in the backend
+            System.out.println("🆔 Requisition ID: " + requisitionId);  // ✅ Log pour déboguer
 
-            return authenticationLink; // ✅ Send link to user
+            // ✅ Retourner à la fois l'authLink et le requisitionId
+            Map<String, String> result = new HashMap<>();
+            result.put("authLink", authenticationLink);
+            result.put("requisitionId", requisitionId);
+            return result;
         }
         throw new RuntimeException("❌ Failed to generate requisition link");
     }
@@ -201,7 +210,6 @@ public class CompteService {
     }
 
 
-    // ✅ STEP 5: Fetch and Save User's Accounts
     public List<String> fetchAndSaveUserAccounts(String requisitionId, Integer userId) {
         String accessToken = getAccessToken();
         String url = BASE_URL + "/requisitions/" + requisitionId;
@@ -215,35 +223,35 @@ public class CompteService {
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             List<String> accounts = (List<String>) response.getBody().get("accounts");
 
-            // 🔍 Vérifier si l'utilisateur existe
             Utilisateur utilisateur = utilisateurRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("❌ Utilisateur introuvable !"));
 
-            // ✅ Initialisation du solde total de l'utilisateur
             if (utilisateur.getBalance() == null) {
                 utilisateur.setBalance(BigDecimal.ZERO);
             }
 
-            BigDecimal totalNewBalance = BigDecimal.ZERO; // ✅ Accumulateur pour les nouveaux comptes
+            BigDecimal totalNewBalance = BigDecimal.ZERO;
 
             for (String accountId : accounts) {
-                // 🔍 Récupérer les détails du compte depuis l'API
+                // ✅ Vérifier si le compte existe déjà par son externalId
+                if (compteRepository.findByExternalId(accountId).isPresent()) {
+                    System.out.println("⚠️ Le compte avec externalId " + accountId + " existe déjà, il ne sera pas ajouté.");
+                    continue; // ⏭ Passer au compte suivant
+                }
+
+                // 🔍 Récupérer les détails du compte depuis GoCardless
                 Compte compte = fetchAccountDetails(accessToken, accountId);
 
                 // Associer l'utilisateur au compte
                 compte.setUtilisateur(utilisateur);
-
-                // ✅ Ajouter le solde du compte au total des nouveaux comptes
                 totalNewBalance = totalNewBalance.add(compte.getBalance());
 
-                // Sauvegarde du compte
+                // ✅ Sauvegarde du compte uniquement si `externalId` est unique
                 compteRepository.save(compte);
             }
 
-            // ✅ Mise à jour du solde utilisateur avec le total des nouveaux comptes
+            // ✅ Mise à jour du solde utilisateur
             utilisateur.setBalance(utilisateur.getBalance().add(totalNewBalance));
-
-            // ✅ Sauvegarde de l'utilisateur avec son nouveau solde
             utilisateurRepository.save(utilisateur);
 
             return accounts;

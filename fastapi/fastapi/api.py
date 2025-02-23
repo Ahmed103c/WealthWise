@@ -15,7 +15,7 @@ label_encoder = joblib.load("label_encoder.pkl")
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # URL du backend Spring Boot
-SPRING_BOOT_URL = "http://localhost:8080/api/predictions/save"
+SPRING_BOOT_URL = "http://localhost:8070/api/predictions/save"
 
 # Définition de la structure de la requête
 class Transaction(BaseModel):

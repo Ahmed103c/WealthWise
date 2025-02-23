@@ -14,6 +14,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import com.Ahmed.Banking.models.Utilisateur;
+import com.Ahmed.Banking.models.Compte;
+import com.Ahmed.Banking.security.JwtTokenProvider;
+import org.springframework.web.bind.annotation.RequestHeader;
+import java.math.BigDecimal;
+import java.util.Objects;
+
+
 import java.util.List;
 
 @Tag(name = "Utilisateur", description = "Endpoints pour la gestion des utilisateurs")
@@ -75,4 +85,28 @@ public class UtilisateurController {
     private boolean isPasswordValid(String inputPassword, String storedPassword) {
         return inputPassword.equals(storedPassword);
     }
+    @GetMapping("/profil/{userId}")
+    public ResponseEntity<?> getUserProfile(@PathVariable Integer userId) {
+        UtilisateurDto utilisateur = service.findById(userId);
+        if (utilisateur == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Utilisateur introuvable !");
+        }
+
+        List<Compte> comptes = service.getComptesByUserId(userId);
+        BigDecimal balance = comptes.stream()
+                .map(Compte::getBalance)
+                .filter(Objects::nonNull) // Éviter les nulls
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("nom", utilisateur.getNom());
+        response.put("prenom", utilisateur.getPrenom());
+        response.put("email", utilisateur.getEmail());
+        response.put("comptes", comptes);
+        response.put("balance", balance);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 }
