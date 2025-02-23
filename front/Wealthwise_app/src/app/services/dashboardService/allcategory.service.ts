@@ -1,50 +1,3 @@
-// import { Injectable } from '@angular/core';
-// import { AuthService } from '../auth.service';
-// import { AlltransactionService } from './alltransaction.service';
-// import { BehaviorSubject, forkJoin } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class AllcategoryService {
-//   transactions: any[] = [];
-//   categories: any[] = [];
-
-//   constructor(
-//     private authservice: AuthService,
-//     private alltransaction: AlltransactionService
-//   ) {}
-
-//   getCategory() {
-//     this.alltransaction.getStoredTransactions().subscribe((transactions) => {
-//       this.transactions = transactions; // Stocke les transactions
-//       this.categories = []; // Réinitialise les catégories
-
-//       if (transactions.length === 0) {
-//         console.log('⚠️ Aucune transaction disponible.');
-//         return;
-//       }
-
-//       const categoryObservables = transactions.map((transaction) =>
-//         this.authservice.getCategoryFromDescription(transaction.description)
-//       );
-
-//       forkJoin(categoryObservables).subscribe(
-//         (categories) => {
-//           this.categories = categories;
-//           console.log('📂 Catégories récupérées :', this.categories);
-//         },
-//         (error) => {
-//           console.error(
-//             '❌ Erreur lors de la récupération des catégories :',
-//             error
-//           );
-//         }
-//       );
-//     });
-//   }
-// }
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -61,35 +14,6 @@ export class AllcategoryService {
     private authservice: AuthService,
     private alltransaction: AlltransactionService
   ) {}
-
-  // getCategory() {
-  //   this.alltransaction.getStoredTransactions().subscribe((transactions) => {
-  //     if (transactions.length === 0) {
-  //       console.log('⚠️ Aucune transaction disponible.');
-  //       this.categoriesSubject.next([]); // Met à jour l'observable avec un tableau vide
-  //       return;
-  //     }
-
-  //     const categoryObservables = transactions.map((transaction) =>
-  //       this.authservice.getCategoryFromDescription(transaction.description)
-  //     );
-
-  //     forkJoin(categoryObservables).subscribe(
-  //       (categories) => {
-  //         this.categoriesSubject.next(categories); // Met à jour les catégories
-  //         console.log('📂 Catégories récupérées :', categories);
-  //       },
-  //       (error) => {
-  //         console.error(
-  //           '❌ Erreur lors de la récupération des catégories :',
-  //           error
-  //         );
-  //         this.categoriesSubject.next([]);
-  //       }
-  //     );
-  //   });
-  // }
- 
   getCategory() {
     this.alltransaction.getStoredTransactions().subscribe((transactions) => {
       if (transactions.length === 0) {
@@ -98,8 +22,13 @@ export class AllcategoryService {
         return;
       }
 
+      const transactionsSemaine =
+        this.filterTransactionsByCurrentWeek(transactions);
+
       // 🎯 Ne garder que les transactions négatives (dépenses)
-      const expenseTransactions = transactions.filter((t) => t.amount < 0);
+      const expenseTransactions = transactionsSemaine.filter(
+        (t) => t.amount < 0
+      );
 
       if (expenseTransactions.length === 0) {
         console.log('⚠️ Aucune dépense trouvée.');
@@ -134,5 +63,43 @@ export class AllcategoryService {
         }
       );
     });
+  }
+
+  /**
+   * 🔹 Filtre les transactions pour ne garder que celles de la semaine en cours
+   */
+  filterTransactionsByCurrentWeek(transactions: any[]): any[] {
+    const startOfWeek = this.getStartOfWeek();
+    const endOfWeek = this.getEndOfWeek();
+
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.transactionDate);
+      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+    });
+  }
+
+  /**
+   * 🔹 Renvoie la date du lundi de la semaine en cours
+   */
+  getStartOfWeek(): Date {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() + diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    return startOfWeek;
+  }
+
+  /**
+   * 🔹 Renvoie la date du dimanche de la semaine en cours
+   */
+  getEndOfWeek(): Date {
+    const startOfWeek = this.getStartOfWeek();
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+    return endOfWeek;
   }
 }
