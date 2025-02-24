@@ -1,13 +1,11 @@
 <div class="chart-container">
-    <!-- {{category}} -->
 
-    <!-- <canvas #chart></canvas> -->
 
     <!-- Message de chargement -->
-    <p *ngIf="isloading">⏳ Chargement des catégories...</p>
+    <!-- <p *ngIf="isloading">⏳ Chargement des catégories...</p> -->
 
     <!-- Liste des catégories une fois chargées -->
-    <ul *ngIf="!isloading ;">
+    <!-- <ul *ngIf="!isloading ;">
         @for(w of uniqueItems ; track w.name ){
         <li>{{w.name}} : {{w.amount}}</li>
         }
@@ -15,6 +13,20 @@
     </ul>
     <div *ngIf="!isloading">
         <canvas #chart></canvas>
+    </div> -->
+
+
+    <!-- @for(w of transactions ; track w.id ){
+    <li>{{w.categoryName}} : {{w.amount}}</li>
+    } -->
+
+    <div class="chart-container">
+        <canvas #pieChart></canvas>
     </div>
+
+
+
+
+
 
 </div>
