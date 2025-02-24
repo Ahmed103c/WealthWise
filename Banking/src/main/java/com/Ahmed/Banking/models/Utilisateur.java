@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -35,58 +35,65 @@ public class Utilisateur {
     @Column(nullable = false)
     private String motDePasse;  // ✅ Sécurisé avec @JsonIgnore
 
-    @JsonIgnore
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference  // 🚀 Empêche la sérialisation infinie
-
+    @JsonIgnore  // ✅ Permet une bonne sérialisation JSON
     private List<Compte> comptes;  // ✅ Liste des comptes individuels
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference  // 🚀 Empêche la sérialisation infinie
-
+    @JsonManagedReference  // ✅ Correction pour la sérialisation
     private List<PartCompte> partComptes;  // ✅ Liste des parts de comptes conjoints
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;  // ✅ Précision + valeur par défaut
 
     /**
-     * Calcule la balance totale de l'utilisateur en additionnant :
+     * ✅ Calcule la balance totale de l'utilisateur en additionnant :
      * - Le solde de ses comptes individuels
      * - Sa part des comptes conjoints
      */
     public BigDecimal calculerBalance() {
         BigDecimal total = BigDecimal.ZERO;
 
-        // Additionner les balances des comptes individuels
+        // Additionner la balance des comptes individuels uniquement (exclure les comptes joints)
         if (comptes != null) {
             for (Compte compte : comptes) {
-                total = total.add(Optional.ofNullable(compte.getBalance()).orElse(BigDecimal.ZERO));
+                if (!compte.isConjoint()) {
+                    total = total.add(Optional.ofNullable(compte.getBalance()).orElse(BigDecimal.ZERO));
+                }
             }
         }
 
-        // Ajouter les parts des comptes conjoints
+        // Ajouter la part des comptes joints (chaque part est calculée selon le pourcentage)
         if (partComptes != null) {
             for (PartCompte part : partComptes) {
-                BigDecimal partBalance = Optional.ofNullable(part.getCompte().getBalance()).orElse(BigDecimal.ZERO)
-                        .multiply(part.getPourcentage()).divide(BigDecimal.valueOf(100));
-                total = total.add(partBalance);
+                if (part.getCompte() != null && part.getCompte().getBalance() != null) {
+                    BigDecimal partBalance = part.getCompte().getBalance()
+                            .multiply(part.getPourcentage())
+                            .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+                    total = total.add(partBalance);
+                }
             }
         }
 
         return total;
     }
+
     @Override
     public String toString() {
         return "Utilisateur{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
                 ", email='" + email + '\'' +
-                // Supprimer comptes pour éviter la boucle infinie
+                ", balance=" + balance +
                 '}';
     }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+    // Dans Utilisateur.java
+    public void mettreAJourBalance() {
+        this.balance = calculerBalance();
     }
 
+
 }
+
+

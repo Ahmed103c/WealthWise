@@ -25,6 +25,12 @@ public class PartCompte {
 
     @Column(precision = 5, scale = 2, nullable = false)
     private BigDecimal pourcentage; // ✅ Pourcentage de propriété (ex: 50%, 25%)
+    // ✅ Constructor to match the one used in CompteService
+    public PartCompte(Utilisateur utilisateur, Compte compte, BigDecimal pourcentage) {
+        this.utilisateur = utilisateur;
+        this.compte = compte;
+        this.pourcentage = pourcentage;
+    }
 }
 
 

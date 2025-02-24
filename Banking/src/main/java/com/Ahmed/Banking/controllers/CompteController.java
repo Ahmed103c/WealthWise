@@ -1,15 +1,18 @@
 package com.Ahmed.Banking.controllers;
 
 import com.Ahmed.Banking.models.Compte;
+import com.Ahmed.Banking.models.Utilisateur;
 import com.Ahmed.Banking.services.Implementations.CompteService;
 import com.Ahmed.Banking.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
+import com.Ahmed.repositories.UtilisateurRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/comptes") // ✅ Base URL for account management
@@ -17,23 +20,53 @@ public class CompteController {
 
     private final CompteService compteService;
     private final TransactionService transactionService;
+    private final UtilisateurRepository utilisateurRepository; // ✅ Déclaration
 
-    public CompteController(CompteService compteService, TransactionService transactionService) {
+
+
+    public CompteController(CompteService compteService, TransactionService transactionService, UtilisateurRepository utilisateurRepository) {
         this.compteService = compteService;
         this.transactionService = transactionService;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     @PostMapping
-    public ResponseEntity<?> createCompte(@RequestBody Compte compte) {
+    public ResponseEntity<?> createCompte(@RequestBody Map<String, Object> requestBody) {
         try {
+            // 🔥 Extraire les infos du JSON
+            String nom = (String) requestBody.get("nom");
+            String externalId = (String) requestBody.get("externalId");
+            String institution = (String) requestBody.get("institution");
+            String iban = (String) requestBody.get("iban");
+            String currency = (String) requestBody.getOrDefault("currency", "EUR");
+            BigDecimal balance = new BigDecimal(requestBody.getOrDefault("balance", 0).toString());
+            Integer utilisateurId = (Integer) ((Map<String, Object>) requestBody.get("utilisateur")).get("id");
+            boolean isConjoint = (boolean) requestBody.getOrDefault("conjoint", false);
+
+            // 🔥 Créer le compte proprement
+            Compte compte = new Compte();
+            compte.setNom(nom);
+            compte.setExternalId(externalId);
+            compte.setInstitution(institution);
+            compte.setIban(iban);
+            compte.setCurrency(currency);
+            compte.setBalance(balance);
+            compte.setConjoint(isConjoint);
+
+            // 🔥 Associer l'utilisateur par son ID
+            Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                    .orElseThrow(() -> new RuntimeException("❌ Utilisateur introuvable !"));
+            compte.setUtilisateur(utilisateur);
+
+            // 🔥 Enregistrer le compte
             Compte savedCompte = compteService.saveCompte(compte);
             return ResponseEntity.ok(savedCompte);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ Impossible de créer le compte !"));
+            return ResponseEntity.badRequest().body(Map.of("error", "❌ Impossible de créer le compte : " + e.getMessage()));
         }
     }
+
 
 
     // ✅ 2️⃣ Retrieve all accounts for a specific user

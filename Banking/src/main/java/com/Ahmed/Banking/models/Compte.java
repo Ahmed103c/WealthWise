@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,10 +35,9 @@ public class Compte {
 
     @ManyToOne
     @JoinColumn(name = "id_utilisateur", nullable = true)
-    @JsonBackReference  // 🚀 Empêche la sérialisation infinie
+    @JsonIgnore  // ✅ Correction pour la sérialisation
+    private Utilisateur utilisateur;
 
-
-    private Utilisateur utilisateur; // ✅ Propriétaire du compte
 
     @Column(nullable = false)
     @Builder.Default
@@ -47,10 +47,9 @@ public class Compte {
 
     @OneToMany(mappedBy = "compte", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JsonBackReference  // 🚀 Empêche la sérialisation infinie
-
-
+    @JsonIgnore  // ✅ Empêche Jackson d’essayer de charger les relations lors de la désérialisation
     private List<PartCompte> parts;
+
 
     /**
      * ✅ Vérifie si un compte est conjoint.
@@ -62,11 +61,23 @@ public class Compte {
     public String toString() {
         return "Compte{" +
                 "id=" + id +
-                ", iban='" + iban + '\'' +
+                ", nom='" + nom + '\'' +
                 ", balance=" + balance +
                 ", currency='" + currency + '\'' +
-                // Supprimer utilisateurs pour éviter la boucle infinie
+                ", isConjoint=" + isConjoint +
                 '}';
     }
+    // ✅ Constructor to match the one used in CompteService
+    public Compte(String nom, String externalId, String institution, String iban,
+                  String currency, BigDecimal balance, boolean isConjoint) {
+        this.nom = nom;
+        this.externalId = externalId;
+        this.institution = institution;
+        this.iban = iban;
+        this.currency = currency;
+        this.balance = balance;
+        this.isConjoint = isConjoint;
+    }
+
 
 }
