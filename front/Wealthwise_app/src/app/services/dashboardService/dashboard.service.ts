@@ -9,6 +9,7 @@ import { GoalsComponent } from '../../pages/dashboard/widgets/goals/goals.compon
 import { DepenseGraphComponent } from '../../pages/dashboard/widgets/depense-graph/depense-graph.component';
 import { NotificationsComponent } from '../../pages/dashboard/widgets/notifications/notifications.component';
 import { AuthService } from '../auth.service';
+import { ChatbotComponent } from '../../pages/dashboard/widgets/chatbot/chatbot.component';
 
 @Injectable()
 export class DashboardService {
@@ -70,6 +71,12 @@ export class DashboardService {
       backgroundColor: '#E3B6B1',
       color: 'whitesmoke',
     },
+    {
+      id: 9,
+      label: 'chatbot',
+      content: ChatbotComponent,
+      backgroundColor: '#E3B6B1',
+      color: 'whitesmoke',
+    },
   ]);
- 
 }

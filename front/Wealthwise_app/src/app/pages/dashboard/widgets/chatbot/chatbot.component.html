@@ -1,0 +1,10 @@
+<p>chatbot works!</p>
+Hello World
+<div style="text-align: center;">
+    <h1>Pose une question</h1>
+    <input [(ngModel)]="question" placeholder="Pose ta question ici" />
+    <button (click)="sendQuestion()">Envoyer</button>
+
+    <h2>Réponse :</h2>
+    <p>{{ response }}</p>
+</div>

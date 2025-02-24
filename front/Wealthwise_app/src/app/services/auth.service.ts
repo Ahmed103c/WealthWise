@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode'; // Import correct de jwt-decode (export par défaut)
 
 @Injectable({
@@ -117,5 +117,20 @@ export class AuthService {
     const url = `http://localhost:8070/api/category/predict?description=${desciprtion}`;
     console.log(`Category : ` + this.http.get<any>(url));
     return this.http.get<any>(url);
+  }
+  getAnswer(question: string): Observable<any> {
+    const userId = this.getUserIdFromToken();
+    const chatBotUrl = `http://localhost:8070/chatbot/ask/${userId}?question=${encodeURIComponent(
+      question
+    )}`;
+
+    console.log(
+      `📤 Envoi de la requête au service Spring Boot (GET) : ${chatBotUrl}`
+    );
+    console.log(this.http.get<any>(chatBotUrl));
+
+    return this.http.get(chatBotUrl, { responseType: 'text' }).pipe(
+      map((response) => ({ response })) // Convertit en un objet JSON
+    );
   }
 }

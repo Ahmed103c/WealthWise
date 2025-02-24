@@ -17,18 +17,15 @@
   animation: fadeInUp 0.5s ease-out;
 }
 
-
 .dashboard-widgets > app-widget:nth-child(5) {
   grid-column: span 3;
   grid-row: span 2;
 }
 
-
 .dashboard-widgets > app-widget:nth-child(6) {
   grid-column: span 1;
   grid-row: span 1;
 }
-
 
 .dashboard-widgets > app-widget:nth-child(7) {
   grid-column: span 1;
@@ -36,6 +33,10 @@
 }
 
 .dashboard-widgets > app-widget:nth-child(8) {
-  grid-column: span 3;
+  grid-column: span 2;
   grid-row: span 2;
+}
+.dashboard-widgets > app-widget:nth-child(9) {
+  grid-column: span 1;
+  grid-row: span 1;
 }
