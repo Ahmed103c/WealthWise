@@ -35,6 +35,12 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDto>> getTransactionsByCompteId(@PathVariable Integer compteId) {
         return ResponseEntity.ok(transactionService.getTransactionsByCompteId(compteId));
     }
+    //Récupérer les transactions d'un utilisateur spécifique   
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TransactionDto>> getTransactionsByUserId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(transactionService.getTransactionsByUserId(userId));
+    }
+
 
     // Importer des transactions depuis un fichier CSV
     @PostMapping("/import")

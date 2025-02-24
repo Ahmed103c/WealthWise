@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
     List<Transaction> findByCompteId(Integer compteId);
+    // ✅ Utilise `In` pour rechercher plusieurs compteIds
+    List<Transaction> findByCompteIdIn(List<Integer> compteIds);
 
     @Query("SELECT t FROM Transaction t WHERE t.compte.utilisateur.id = :userId")
     List<Transaction> findTransactionsByUserId(@Param("userId") Integer userId);
