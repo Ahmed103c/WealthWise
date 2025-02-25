@@ -190,6 +190,9 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setAmount(transactionDto.getAmount());
         transaction.setTransactionDate(transactionDto.getTransactionDate());
         transaction.setDescription(transactionDto.getDescription());
+        transaction.setType(transactionDto.getType());
+        transaction.setRecurrenceFrequency(transactionDto.getRecurrenceFrequency());
+        transaction.setRecurrenceEnd(transactionDto.getRecurrenceEnd());
         transaction.setCompte(compte);
         transaction.setCategory(category);
 

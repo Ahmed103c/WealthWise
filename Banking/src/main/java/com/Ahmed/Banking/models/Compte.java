@@ -35,8 +35,9 @@ public class Compte {
 
     @ManyToOne
     @JoinColumn(name = "id_utilisateur", nullable = true)
-    @JsonIgnore  // ✅ Correction pour la sérialisation
+    @JsonBackReference // ✅ Correction de la boucle infinie
     private Utilisateur utilisateur;
+
 
 
     @Column(nullable = false)
@@ -78,6 +79,8 @@ public class Compte {
         this.balance = balance;
         this.isConjoint = isConjoint;
     }
+
+
 
 
 }

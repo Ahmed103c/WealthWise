@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -15,6 +17,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Utilisateur {
 
     @Id
@@ -36,8 +40,9 @@ public class Utilisateur {
     private String motDePasse;  // ✅ Sécurisé avec @JsonIgnore
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // ✅ Permet une bonne sérialisation JSON
-    private List<Compte> comptes;  // ✅ Liste des comptes individuels
+    @JsonIgnore  // ✅ Ignore cette liste lors de la sérialisation pour éviter les boucles
+    private List<Compte> comptes;
+
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference  // ✅ Correction pour la sérialisation
@@ -83,10 +88,9 @@ public class Utilisateur {
         return "Utilisateur{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
-                ", email='" + email + '\'' +
-                ", balance=" + balance +
                 '}';
     }
+
 
     // Dans Utilisateur.java
     public void mettreAJourBalance() {
