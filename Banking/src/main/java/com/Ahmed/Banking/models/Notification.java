@@ -4,26 +4,32 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "notification")
+@Entity
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "utilisateur_id", nullable = false)
-    private Utilisateur utilisateur;
-
-    private String message;
-
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    private LocalDateTime date;
+    private String message;
+
+    private LocalDateTime dateCreation;
+
+    @ManyToOne
+    @JoinColumn(name = "id_utilisateur", nullable = false)
+    private Utilisateur utilisateur;
+    // ✅ Ajout du champ "lue" pour savoir si la notification a été lue
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean lue = false;
 }
+
+
+

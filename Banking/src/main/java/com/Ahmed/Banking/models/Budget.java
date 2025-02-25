@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,4 +26,7 @@ public class Budget {
 
     private LocalDate startDate;
     private LocalDate endDate;
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BudgetCategorie> budgetCategories;
+
 }

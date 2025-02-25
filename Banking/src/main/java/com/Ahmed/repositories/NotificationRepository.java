@@ -1,11 +1,12 @@
 package com.Ahmed.repositories;
 
 import com.Ahmed.Banking.models.Notification;
+import com.Ahmed.Banking.models.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
+    List<Notification> findAllByUtilisateurOrderByDateCreationDesc(Utilisateur utilisateur);
     List<Notification> findByUtilisateurId(Integer utilisateurId);
+
 }
