@@ -1,10 +1,31 @@
-<p>chatbot works!</p>
-Hello World
-<div style="text-align: center;">
-    <h1>Pose une question</h1>
+<!-- <div style="text-align: center;">
+    <h3>Pose une question</h3>
     <input [(ngModel)]="question" placeholder="Pose ta question ici" />
     <button (click)="sendQuestion()">Envoyer</button>
 
-    <h2>Réponse :</h2>
+    <h3>Réponse :</h3>
     <p>{{ response }}</p>
+</div> -->
+<div style="text-align: center;">
+    <h3>Historique :</h3>
+    <div class="chat-history">
+        <div *ngFor="let msg of history" class="message-container">
+            <div class="message user-message">
+                <p><strong>Utilisateur :</strong> {{ msg.question }}</p>
+            </div>
+            <div class="message bot-message">
+                <p><strong>Chatbot :</strong></p>
+                <div *ngIf="!isloading">
+                    {{ msg.response }}
+                </div>
+                <div *ngIf="isloading">
+                    Loading
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <h3>Pose une question</h3>
+    <input [(ngModel)]="question" placeholder="Pose ta question ici" />
+    <button (click)="sendQuestion()">Envoyer</button>
 </div>

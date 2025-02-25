@@ -1,0 +1,34 @@
+.chat-history {
+  height: 300px;
+  max-height: 300px; /* Hauteur fixe */
+  overflow-y: auto; /* Ajout d'un scroll si nécessaire */
+  color: black;
+  border: 1px solid #ccc; /* Bordure pour séparation */
+  padding: 10px;
+  background-color: #f9f9f9; /* Fond léger */
+}
+.message-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+.message {
+  max-width: 70%;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+.user-message {
+  background-color: #007bff;
+  color: white;
+  align-self: flex-end; /* Aligne à gauche */
+}
+
+.bot-message {
+  text-align: left;
+  background-color: #f1f1f1;
+  color: black;
+  align-self: flex-start; /* Aligne à droite */
+}
