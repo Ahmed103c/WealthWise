@@ -71,12 +71,12 @@ export class DashboardService {
       backgroundColor: '#E3B6B1',
       color: 'whitesmoke',
     },
-    {
-      id: 9,
-      label: 'chatbot',
-      content: ChatbotComponent,
-      backgroundColor: '#E3B6B1',
-      color: 'whitesmoke',
-    },
+    // {
+    //   id: 9,
+    //   label: 'chatbot',
+    //   content: ChatbotComponent,
+    //   backgroundColor: '#E3B6B1',
+    //   color: 'whitesmoke',
+    // },
   ]);
 }

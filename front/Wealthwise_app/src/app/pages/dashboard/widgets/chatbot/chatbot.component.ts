@@ -15,8 +15,10 @@ export class ChatbotComponent {
   question: string = '';
   history: { question: string; response: string }[] = [];
   isloading: boolean = true;
+  onWelcome: boolean = true;
 
   sendQuestion() {
+    this.onWelcome = false;
     const newMessage = { question: this.question, response: '' };
     this.history.push(newMessage);
 
