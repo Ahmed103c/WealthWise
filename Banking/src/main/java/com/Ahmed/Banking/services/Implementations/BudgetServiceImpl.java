@@ -3,22 +3,9 @@ package com.Ahmed.Banking.services.Implementations;
 import com.Ahmed.Banking.models.*;
 import com.Ahmed.Banking.services.BudgetService;
 import com.Ahmed.Banking.services.NotificationService;
-
-import com.Ahmed.repositories.BudgetCategorieRepository;
-import com.Ahmed.repositories.BudgetRepository;
-import com.Ahmed.repositories.CategoryRepository;
-import com.Ahmed.repositories.UtilisateurRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-
-import com.Ahmed.Banking.models.*;
-
+import com.Ahmed.repositories.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,33 +15,32 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BudgetServiceImpl implements BudgetService {
 
+    // ✅ Injection des dépendances avec `@RequiredArgsConstructor`
     private final BudgetRepository budgetRepository;
     private final BudgetCategorieRepository budgetCategorieRepository;
     private final CategoryRepository categoryRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final NotificationService notificationService;
+    private final TransactionRepository transactionRepository;
+    private final CompteRepository compteRepository;
 
-    public BudgetServiceImpl(BudgetRepository budgetRepository,
-                             BudgetCategorieRepository budgetCategorieRepository,
-                             CategoryRepository categoryRepository,
-                             UtilisateurRepository utilisateurRepository,
-                             NotificationService notificationService) {
-        this.budgetRepository = budgetRepository;
-        this.budgetCategorieRepository = budgetCategorieRepository;
-        this.categoryRepository = categoryRepository;
-        this.utilisateurRepository = utilisateurRepository;
-        this.notificationService = notificationService;
-    }
-
+    /**
+     * ✅ **Créer un budget pour un utilisateur**
+     * - Vérifie l'existence de l'utilisateur.
+     * - Détermine les dates de début et de fin en fonction de la période.
+     * - Vérifie si un budget existe déjà pour cette période.
+     * - Enregistre et retourne le budget créé.
+     */
     @Override
     @Transactional
     public Budget creerBudget(Integer utilisateurId, BigDecimal montantAlloue, String periode) {
-        // 🔥 Vérifier si l'utilisateur existe
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
                 .orElseThrow(() -> new RuntimeException("❌ Utilisateur introuvable !"));
 
+        // 🔄 Définition des périodes du budget
         LocalDate startDate, endDate;
         switch (periode.toLowerCase()) {
             case "mensuel":
@@ -73,7 +59,7 @@ public class BudgetServiceImpl implements BudgetService {
                 throw new IllegalArgumentException("❌ Période invalide !");
         }
 
-        // 🔥 Vérifier si un budget pour cette période existe déjà
+        // ✅ Vérifier si un budget existe déjà pour cette période
         Optional<Budget> existingBudget = budgetRepository.findByUtilisateur(utilisateur)
                 .stream()
                 .filter(b -> b.getStartDate().equals(startDate) && b.getEndDate().equals(endDate))
@@ -83,27 +69,32 @@ public class BudgetServiceImpl implements BudgetService {
             throw new RuntimeException("⚠️ Un budget pour cette période existe déjà !");
         }
 
-        // ✅ Création du budget avec l'utilisateur correctement assigné
+        // ✅ Création et sauvegarde du budget
         Budget budget = Budget.builder()
-                .utilisateur(utilisateur)  // 🔥 Assigne bien l'utilisateur !
+                .utilisateur(utilisateur)
                 .montantAlloue(montantAlloue)
                 .startDate(startDate)
                 .endDate(endDate)
                 .build();
 
-        // ✅ Sauvegarde du budget
         return budgetRepository.save(budget);
     }
 
-
-    // ✅ Récupérer les budgets d'un utilisateur (Correction)
+    /**
+     * ✅ **Récupérer tous les budgets d'un utilisateur**
+     */
     @Override
     public List<Budget> getBudgetsParUtilisateur(Integer utilisateurId) {
-        return budgetRepository.findByUtilisateurId(utilisateurId);  // ✅ Utilisation de `findByUtilisateurId()`
+        return budgetRepository.findByUtilisateurId(utilisateurId);
     }
 
-
-    // ✅ Allouer un budget à une catégorie
+    /**
+     * ✅ **Allouer un montant d'un budget à une catégorie**
+     * - Vérifie si le budget et la catégorie existent.
+     * - Vérifie que le montant ne dépasse pas le budget alloué.
+     * - Vérifie si une allocation existe déjà pour cette catégorie.
+     * - Enregistre l'allocation de budget à la catégorie.
+     */
     @Override
     @Transactional
     public BudgetCategorie allouerBudgetCategorie(Integer budgetId, Integer categorieId, BigDecimal montant) {
@@ -113,6 +104,7 @@ public class BudgetServiceImpl implements BudgetService {
         Category category = categoryRepository.findById(categorieId)
                 .orElseThrow(() -> new RuntimeException("❌ Catégorie introuvable !"));
 
+        // ✅ Vérifier que l'on ne dépasse pas le budget total
         BigDecimal montantTotalAlloue = budgetCategorieRepository.findByBudgetId(budgetId)
                 .stream()
                 .map(BudgetCategorie::getMontantAlloue)
@@ -122,14 +114,16 @@ public class BudgetServiceImpl implements BudgetService {
             throw new RuntimeException("❌ Impossible d'allouer ce montant, le budget total serait dépassé !");
         }
 
+        // ✅ Vérifier si une allocation existe déjà pour cette catégorie
         Optional<BudgetCategorie> existingCategoryBudget = budgetCategorieRepository.findByBudgetIdAndCategoryId(budgetId, categorieId);
         if (existingCategoryBudget.isPresent()) {
             throw new RuntimeException("⚠️ Une allocation existe déjà pour cette catégorie !");
         }
 
+        // ✅ Création et sauvegarde de l'allocation
         BudgetCategorie budgetCategorie = BudgetCategorie.builder()
                 .budget(budget)
-                .category(category)  // ✅ Correction de `category()`
+                .category(category)
                 .montantAlloue(montant)
                 .montantDepense(BigDecimal.ZERO)
                 .build();
@@ -137,7 +131,9 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetCategorieRepository.save(budgetCategorie);
     }
 
-    // ✅ Calcul du budget restant
+    /**
+     * ✅ **Calculer le budget restant**
+     */
     @Override
     public BigDecimal getBudgetRestant(Integer budgetId) {
         Budget budget = budgetRepository.findById(budgetId)
@@ -149,5 +145,50 @@ public class BudgetServiceImpl implements BudgetService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return budget.getMontantAlloue().subtract(montantTotalDepense);
+    }
+
+    /**
+     * ✅ **Exécuter les transactions planifiées**
+     * - Exécuté automatiquement chaque jour à 00:01.
+     * - Applique les transactions récurrentes.
+     * - Met à jour le solde des comptes concernés.
+     * - Envoie des notifications aux utilisateurs.
+     */
+    @Scheduled(cron = "0 1 0 * * ?")
+    public void executerTransactionsPlanifiees() {
+        List<Transaction> transactions = transactionRepository.findTransactionsRecurrentesActives(LocalDate.now());
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getTransactionDate().isBefore(LocalDate.now()) &&
+                    (transaction.getRecurrenceEnd() == null || transaction.getTransactionDate().isBefore(transaction.getRecurrenceEnd()))) {
+
+                Compte compte = transaction.getCompte();
+                compte.setBalance(compte.getBalance().subtract(transaction.getAmount()));
+
+                // ✅ Sauvegarde du compte mis à jour
+                compteRepository.save(compte);
+
+                // ✅ Création et sauvegarde de la nouvelle transaction
+                Transaction nouvelleTransaction = Transaction.builder()
+                        .amount(transaction.getAmount())
+                        .type(transaction.getType())
+                        .transactionDate(transaction.getTransactionDate().plusDays(30)) // Simulation d'une transaction mensuelle
+                        .compte(compte)
+                        .description(transaction.getDescription())
+                        .recurrenceFrequency(transaction.getRecurrenceFrequency())
+                        .recurrenceEnd(transaction.getRecurrenceEnd())
+                        .category(transaction.getCategory())
+                        .build();
+
+                transactionRepository.save(nouvelleTransaction);
+
+                // ✅ Envoi de la notification
+                notificationService.creerNotification(
+                        compte.getUtilisateur(),
+                        NotificationType.TRANSACTION_RECURRENTE,
+                        "♻️ Une transaction récurrente de " + transaction.getAmount() + "€ a été effectuée."
+                );
+            }
+        }
     }
 }

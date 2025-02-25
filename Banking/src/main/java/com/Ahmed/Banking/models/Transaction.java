@@ -1,5 +1,6 @@
 package com.Ahmed.Banking.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -30,7 +31,10 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "compte_id")
+    @JsonIgnore  // ✅ Évite la boucle infinie en empêchant la sérialisation de Compte
     private Compte compte;
+
+
 
     private String description;
 
@@ -42,4 +46,26 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    public boolean isRecurrent() {
+        return recurrenceFrequency != null && recurrenceFrequency != RecurrenceFrequency.NONE;
+    }
+
+    public LocalDate getNextExecutionDate() {
+        if (!isRecurrent()) {
+            return null;
+        }
+        switch (recurrenceFrequency) {
+            case DAILY:
+                return transactionDate.plusDays(1);
+            case WEEKLY:
+                return transactionDate.plusWeeks(1);
+            case MONTHLY:
+                return transactionDate.plusMonths(1);
+            case YEARLY:
+                return transactionDate.plusYears(1);
+            default:
+                return null;
+        }
+    }
+
 }

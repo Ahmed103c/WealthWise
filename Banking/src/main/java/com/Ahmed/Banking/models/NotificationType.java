@@ -1,7 +1,9 @@
 package com.Ahmed.Banking.models;
 
 public enum NotificationType {
+    PRELEVEMENT,
+    TRANSACTION_RECURRENTE,
     DEPASSEMENT_BUDGET,
-    FRAUDE,
-    PRELEVEMENT_IMMINENT
-}
+    RISQUE_DEPASSEMENT;  // ✅ Ajouté ici !
+
+    }
