@@ -17,10 +17,10 @@
             </div>
             <div class="message bot-message">
                 <p><strong>Chatbot :</strong></p>
-                <div *ngIf="!isloading">
+                <div *ngIf="!msg.isloading">
                     {{ msg.response }}
                 </div>
-                <div *ngIf="isloading">
+                <div *ngIf="msg.isloading">
                     Loading ...
                 </div>
             </div>

@@ -13,28 +13,31 @@ export class ChatbotComponent {
   constructor(private authservice: AuthService) {}
 
   question: string = '';
-  history: { question: string; response: string }[] = [];
-  isloading: boolean = true;
+  history: { question: string; response: string; isloading: boolean }[] = [];
   onWelcome: boolean = true;
 
   sendQuestion() {
     this.onWelcome = false;
-    const newMessage = { question: this.question, response: '' };
+    const newMessage = {
+      question: this.question,
+      response: '',
+      isloading: true,
+    };
     this.history.push(newMessage);
 
     const messageIndex = this.history.length - 1;
 
     this.authservice.getAnswer(this.question).subscribe(
       (data) => {
-        this.isloading = false;
         this.history[messageIndex].response = data.response;
+        this.history[messageIndex].isloading = false;
       },
       (error) => {
         console.error('Erreur', error);
         this.history[messageIndex].response = 'Une erreur est survenue.';
+        this.history[messageIndex].isloading = false;
       }
     );
     this.question = '';
-    this.isloading = true;
   }
 }
