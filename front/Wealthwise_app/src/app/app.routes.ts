@@ -7,10 +7,11 @@ import { MainLayoutComponent } from './pages/main-layout/main-layout.component';
 import { HomeComponent } from './pages/home/home.component';
 import { BudgetComponent } from './pages/budget/budget.component';
 import { TransactionComponent } from './pages/transaction/transaction.component';
+import { CompteConjointComponent } from './pages/compteconjoint/compteconjoint.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent }, // ✅ Vérifier que la route existe
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
     path: 'main',
@@ -19,8 +20,9 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'infoperso', component: InfopersoComponent },
       { path: 'app-budget', component: BudgetComponent },
-      { path: 'app-transaction', component: TransactionComponent }
+      { path: 'app-transaction', component: TransactionComponent },
+      // Ajout de la route pour la page compte conjoint
+      { path: 'compte-conjoint', component: CompteConjointComponent }
     ]
   },
 ];
-
