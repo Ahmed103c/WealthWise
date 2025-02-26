@@ -1,7 +1,7 @@
 import {
   Title
-} from "./chunk-K6MDFPD5.js";
-import "./chunk-LKVU2WRW.js";
+} from "./chunk-J47LF56W.js";
+import "./chunk-O3UMMKGB.js";
 import {
   DOCUMENT,
   HashLocationStrategy,
@@ -10,7 +10,7 @@ import {
   LocationStrategy,
   PathLocationStrategy,
   ViewportScroller
-} from "./chunk-QYOP2TXL.js";
+} from "./chunk-MHLY42HC.js";
 import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
@@ -59,7 +59,6 @@ import {
   reflectComponentType,
   runInInjectionContext,
   setClassMetadata,
-  ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
   ɵɵattribute,
   ɵɵcontentQuery,
@@ -78,7 +77,7 @@ import {
   ɵɵloadQuery,
   ɵɵqueryRefresh,
   ɵɵsanitizeUrlOrResourceUrl
-} from "./chunk-2CLESRGD.js";
+} from "./chunk-LRLDKYXN.js";
 import "./chunk-5OPE3T2R.js";
 import {
   defer,
@@ -4974,7 +4973,7 @@ var RouterLink = class _RouterLink {
       replaceUrl: [2, "replaceUrl", "replaceUrl", booleanAttribute],
       routerLink: "routerLink"
     },
-    features: [ɵɵInputTransformsFeature, ɵɵNgOnChangesFeature]
+    features: [void 0, ɵɵNgOnChangesFeature]
   });
 };
 (() => {
@@ -5883,7 +5882,7 @@ function mapToCanDeactivate(providers) {
 function mapToResolve(provider) {
   return (...params) => inject(provider).resolve(...params);
 }
-var VERSION = new Version("19.1.6");
+var VERSION = new Version("19.1.7");
 function getLoadedRoutes(route) {
   return route._loadedRoutes;
 }
@@ -5972,7 +5971,7 @@ export {
 
 @angular/router/fesm2022/router.mjs:
   (**
-   * @license Angular v19.1.6
+   * @license Angular v19.1.7
    * (c) 2010-2024 Google LLC. https://angular.io/
    * License: MIT
    *)

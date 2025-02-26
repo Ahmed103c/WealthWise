@@ -5,3 +5,7 @@
         }
     </div>
 </div>
+<div class="chatbot-icon" (click)="toggleChatbot()">
+    🤖
+</div>
+<app-chatbot *ngIf="showChatbot" class="chatbot-container"></app-chatbot>

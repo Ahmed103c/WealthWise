@@ -1,6 +1,6 @@
 import {
   getDOM
-} from "./chunk-QYOP2TXL.js";
+} from "./chunk-MHLY42HC.js";
 import {
   ChangeDetectorRef,
   Directive,
@@ -41,7 +41,7 @@ import {
   ɵɵdirectiveInject,
   ɵɵgetInheritedFactory,
   ɵɵlistener
-} from "./chunk-2CLESRGD.js";
+} from "./chunk-LRLDKYXN.js";
 import "./chunk-5OPE3T2R.js";
 import {
   forkJoin
@@ -4406,7 +4406,9 @@ var FormGroupDirective = class _FormGroupDirective extends ControlContainer {
   }
   /** @nodoc */
   ngOnChanges(changes) {
-    this._checkFormPresent();
+    if ((typeof ngDevMode === "undefined" || ngDevMode) && !this.form) {
+      throw missingFormException();
+    }
     if (changes.hasOwnProperty("form")) {
       this._updateValidators();
       this._updateDomValue();
@@ -4628,11 +4630,6 @@ var FormGroupDirective = class _FormGroupDirective extends ControlContainer {
     setUpValidators(this.form, this);
     if (this._oldForm) {
       cleanUpValidators(this._oldForm, this);
-    }
-  }
-  _checkFormPresent() {
-    if (!this.form && (typeof ngDevMode === "undefined" || ngDevMode)) {
-      throw missingFormException();
     }
   }
   static ɵfac = function FormGroupDirective_Factory(__ngFactoryType__) {
@@ -6723,7 +6720,7 @@ var UntypedFormBuilder = class _UntypedFormBuilder extends FormBuilder {
     }]
   }], null, null);
 })();
-var VERSION = new Version("19.1.6");
+var VERSION = new Version("19.1.7");
 var FormsModule = class _FormsModule {
   /**
    * @description
@@ -6876,7 +6873,7 @@ export {
 
 @angular/forms/fesm2022/forms.mjs:
   (**
-   * @license Angular v19.1.6
+   * @license Angular v19.1.7
    * (c) 2010-2024 Google LLC. https://angular.io/
    * License: MIT
    *)

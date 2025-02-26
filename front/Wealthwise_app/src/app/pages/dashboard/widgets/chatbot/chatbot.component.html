@@ -1,0 +1,37 @@
+<!-- <div style="text-align: center;">
+    <h3>Pose une question</h3>
+    <input [(ngModel)]="question" placeholder="Pose ta question ici" />
+    <button (click)="sendQuestion()">Envoyer</button>
+
+    <h3>Réponse :</h3>
+    <p>{{ response }}</p>
+</div> -->
+<div *ngIf="onWelcome">
+    <div class="welcome"> Votre assistant virtuelle <br> est à votre service <br> ⚡⚡⚡</div>
+</div>
+<div *ngIf="!onWelcome">
+    <div class="chat-history">
+        <div *ngFor="let msg of history" class="message-container">
+            <div class="message user-message">
+                <p><strong>Utilisateur :</strong> {{ msg.question }}</p>
+            </div>
+            <div class="message bot-message">
+                <p><strong>Chatbot :</strong></p>
+                <div *ngIf="!isloading">
+                    {{ msg.response }}
+                </div>
+                <div *ngIf="isloading">
+                    Loading ...
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- <h3>Pose une question</h3>
+    <input [(ngModel)]="question" placeholder="Pose ta question ici" />
+    <button (click)="sendQuestion()">Envoyer</button> -->
+<div class="chat-input-container">
+    <input [(ngModel)]="question" class="chat-input" placeholder="Pose ta question ici" />
+    <button class="chat-send-button" (click)="sendQuestion()">Envoyer</button>
+</div>

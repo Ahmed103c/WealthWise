@@ -38,6 +38,8 @@ public class TransactionDto {
 
     private Integer categoryId;
 
+    private String categoryName;
+
     // ✅ Conversion d'une entité Transaction en TransactionDto
     public static TransactionDto fromEntity(Transaction transaction) {
         return TransactionDto.builder()
@@ -50,6 +52,7 @@ public class TransactionDto {
                 .recurrenceEnd(transaction.getRecurrenceEnd())
                 .compteId(transaction.getCompte().getId())
                 .categoryId(transaction.getCategory() != null ? transaction.getCategory().getId() : null)
+                .categoryName(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
                 .build();
     }
 

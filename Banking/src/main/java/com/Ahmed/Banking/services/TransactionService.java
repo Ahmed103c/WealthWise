@@ -7,6 +7,8 @@ import java.util.List;
 public interface TransactionService {
     TransactionDto saveTransaction(TransactionDto transactionDto);
     List<TransactionDto> getTransactionsByCompteId(Integer compteId);
+    List<TransactionDto>  getTransactionsByUserId(Integer compteId);
+    List<TransactionDto>  getTransactionsByUserId2(Integer compteId);
     void importTransactionsFromCsv(MultipartFile file);
     byte[] exportTransactionsToCsv();
     // ✅ Add missing method: Fetch transactions from GoCardless API

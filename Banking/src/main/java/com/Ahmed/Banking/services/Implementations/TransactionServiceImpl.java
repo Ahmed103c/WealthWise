@@ -253,7 +253,30 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<TransactionDto> getTransactionsByUserId(Integer userId) {
+        List<Compte> comptes = compteRepository.findByUtilisateurId(userId);
+        if (comptes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Transaction> allTransactions = new ArrayList<>();
+        
+        for (Compte compte : comptes) {
+            List<Transaction> transactions = transactionRepository.findByCompteId(compte.getId());
+            allTransactions.addAll(transactions);
+        }
+
+        return allTransactions.stream()
+                .map(TransactionDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
+
+
+     @Override
+    public List<TransactionDto> getTransactionsByUserId2(Integer userId) {
         List<Transaction> transactions = transactionRepository.findTransactionsByUserId(userId);
         return transactions.stream()
                 .map(TransactionDto::fromEntity)
