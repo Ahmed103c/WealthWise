@@ -118,11 +118,10 @@ export class DepenseGraphComponent implements OnInit {
     this.alltransactionService.allTransactions$.subscribe((transactions) => {
       console.log('📂 Transactions mises à jour :', transactions);
 
-      //les transactions de la semaine 
+      //les transactions de la semaine
       const transactionsSemaine =
         this.filterTransactionsByCurrentWeek(transactions);
       console.log(transactionsSemaine);
-
 
       if (!this.chart || !this.chart.nativeElement) {
         console.error("L'élément canvas du graphique est introuvable !");
@@ -163,14 +162,23 @@ export class DepenseGraphComponent implements OnInit {
               data: depenses,
               borderColor: 'rgb(255,99,132)',
               backgroundColor: 'rgba(255,99,132,0.5)',
-              fill: 'start',
+              // fill: 'start',
+              // tension: 0,
+              // spanGaps: false, // Ne pas connecter les points
+              // showLine: false, // Désactiver la ligne
+              pointRadius: 5, // Taille des points
+              // pointBackgroundColor: 'rgb(255,99,132)',
             },
             {
               label: 'Gains',
               data: gains,
               borderColor: 'rgb(0,82,245)',
               backgroundColor: 'rgba(0,82,245,0.5)',
-              fill: 'start',
+              // fill: 'start',
+              // tension: ,
+
+              pointRadius: 5, // Taille des points
+              // pointBackgroundColor: 'rgb(0,82,245)',
             },
           ],
         },
@@ -183,8 +191,15 @@ export class DepenseGraphComponent implements OnInit {
           },
           plugins: {
             legend: {
+              position: 'left',
               labels: {
+                boxWidth: 50,
+                padding: 20,
                 color: 'whitesmoke',
+                font: {
+                  size: 20,
+                },
+                textAlign: 'left',
               },
             },
           },
@@ -211,28 +226,28 @@ export class DepenseGraphComponent implements OnInit {
 
   getJourIndex(dateString: string): number {
     const date = new Date(dateString); // Convertir la string en objet Date
-    const jour = date.getDay();        // Récupérer le jour (0 = Dimanche, 1 = Lundi, etc.)
-    return jour === 0 ? 6 : jour - 1;  // Adapter pour ['Lun', 'Mar', ...] (lundi = index 0)
+    const jour = date.getDay(); // Récupérer le jour (0 = Dimanche, 1 = Lundi, etc.)
+    return jour === 0 ? 6 : jour - 1; // Adapter pour ['Lun', 'Mar', ...] (lundi = index 0)
   }
 
   getStartOfWeek(): Date {
     const today = new Date();
-    const dayOfWeek = today.getDay();                  // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
+    const dayOfWeek = today.getDay(); // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
     const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si dimanche, on recule de 6 jours
 
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() + diff);       // On ajuste la date pour obtenir le lundi
+    startOfWeek.setDate(today.getDate() + diff); // On ajuste la date pour obtenir le lundi
 
-    startOfWeek.setHours(0, 0, 0, 0);                 // On remet à minuit pour éviter les erreurs
+    startOfWeek.setHours(0, 0, 0, 0); // On remet à minuit pour éviter les erreurs
     return startOfWeek;
   }
 
   getEndOfWeek(): Date {
     const startOfWeek = this.getStartOfWeek();
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);    // Dimanche = Lundi + 6 jours
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Dimanche = Lundi + 6 jours
 
-    endOfWeek.setHours(23, 59, 59, 999);             // Fin de la journée
+    endOfWeek.setHours(23, 59, 59, 999); // Fin de la journée
     return endOfWeek;
   }
 
@@ -245,5 +260,4 @@ export class DepenseGraphComponent implements OnInit {
       return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
     });
   }
-  
 }

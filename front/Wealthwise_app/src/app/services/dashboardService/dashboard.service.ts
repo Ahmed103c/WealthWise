@@ -45,7 +45,7 @@ export class DashboardService {
     },
     {
       id: 5,
-      label: 'Dépenses Catégories',
+      label: 'Catégories de dépenses hebdomadaires',
       content: DepensePieChartComponent,
       backgroundColor: '#E3B6B1',
       color: 'whitesmoke',
@@ -66,7 +66,7 @@ export class DashboardService {
     },
     {
       id: 8,
-      label: 'Dépenses graph',
+      label: 'Dépenses et revenus de la semaine',
       content: DepenseGraphComponent,
       backgroundColor: '#E3B6B1',
       color: 'whitesmoke',

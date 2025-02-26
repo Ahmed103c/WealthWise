@@ -145,16 +145,13 @@ export class DepensePieChartComponent {
     this.alltransactionService.allTransactions$.subscribe((transactions) => {
       console.log('📂 Transactions mises à jour :', transactions);
       // this.transactions = transactions;
-      
+
       const transactionsSemaine =
         this.filterTransactionsByCurrentWeek(transactions);
-  
 
       const transactionsParCategorie =
         this.groupTransactionsByCategory(transactionsSemaine);
       console.log('📊 Montant total par catégorie :', transactionsParCategorie);
-
- 
 
       const transactionsNegatives = transactionsSemaine.filter(
         (t) => t.amount < 0
@@ -212,10 +209,19 @@ export class DepensePieChartComponent {
           maintainAspectRatio: false,
           responsive: true,
           plugins: {
+            tooltip: {
+              enabled: true,
+            },
             legend: {
-              position: 'top',
+              position: 'left',
               labels: {
+                boxWidth: 50,
+                padding: 20,
                 color: 'whitesmoke',
+                font: {
+                  size: 20,
+                },
+                textAlign: 'left',
               },
             },
           },
