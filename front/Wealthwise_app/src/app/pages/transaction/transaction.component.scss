@@ -1,0 +1,25 @@
+.transaction-container {
+  margin-top: 100px;
+  margin-left: 250px; /* Décale le box à gauche de 105px */
+  margin-right: 10px;
+  padding: 20px; /* Ajoute de l'espace autour des widgets à l'intérieur du box */
+  box-sizing: border-box; /* Inclut le padding dans les dimensions du box */
+  border-radius: 16px;
+  max-width: 600px;
+}
+form div,
+.search-container {
+  margin-bottom: 1rem;
+}
+.message {
+  color: red;
+  margin-top: 1rem;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
