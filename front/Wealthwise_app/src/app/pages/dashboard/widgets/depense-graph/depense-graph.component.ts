@@ -16,6 +16,9 @@ export class DepenseGraphComponent implements OnInit {
     private alltransactionService: AlltransactionService
   ) {}
   transactions: any[] = [];
+  depensesTotale: number = 0;
+  gainsTotale: number = 0;
+  semaineEncours: string = '';
   /**************************************************************
    *
    *
@@ -113,6 +116,7 @@ export class DepenseGraphComponent implements OnInit {
   // }
 
   ngOnInit() {
+    this.semaineEncours = this.getCurrentWeek();
     this.alltransactionService.getTransactions(); // Charge les transactions
 
     this.alltransactionService.allTransactions$.subscribe((transactions) => {
@@ -136,6 +140,8 @@ export class DepenseGraphComponent implements OnInit {
       const labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
       let depenses = new Array(7).fill(0); // 7 jours
       let gains = new Array(7).fill(0);
+      this.depensesTotale = 0;
+      this.gainsTotale = 0;
 
       // Remplissage des données en fonction des transactions
       transactionsSemaine.forEach((transaction) => {
@@ -143,9 +149,11 @@ export class DepenseGraphComponent implements OnInit {
         console.log(jourIndex);
         if (transaction.amount < 0) {
           depenses[jourIndex] += transaction.amount;
+          this.depensesTotale += transaction.amount;
           // console.log('transaction depense ' + transaction.amount);
         } else {
           gains[jourIndex] += transaction.amount;
+          this.gainsTotale += transaction.amount;
           // console.log('transaction gain ' + transaction.amount);
         }
       });
@@ -259,5 +267,23 @@ export class DepenseGraphComponent implements OnInit {
       const transactionDate = new Date(transaction.transactionDate);
       return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
     });
+  }
+  getCurrentWeek(): string {
+    const today = new Date();
+    const firstDayOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 1)
+    ); // Lundi
+    const lastDayOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 7)
+    ); // Dimanche
+    const options: Intl.DateTimeFormatOptions = {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    };
+    return `${firstDayOfWeek.toLocaleDateString(
+      'fr-FR',
+      options
+    )} - ${lastDayOfWeek.toLocaleDateString('fr-FR', options)}`;
   }
 }

@@ -8,6 +8,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { BudgetComponent } from './pages/budget/budget.component';
 import { TransactionComponent } from './pages/transaction/transaction.component';
 import { StatistiquesComponent } from './pages/statistiques/statistiques.component';
+import { CompteConjointComponent } from './pages/compteconjoint/compteconjoint.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,6 +23,7 @@ export const routes: Routes = [
       { path: 'app-budget', component: BudgetComponent },
       { path: 'app-transaction', component: TransactionComponent },
       { path: 'app-statistiques', component: StatistiquesComponent },
+      { path: 'compte-conjoint', component: CompteConjointComponent },
     ],
   },
 ];

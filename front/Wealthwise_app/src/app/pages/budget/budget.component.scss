@@ -1,0 +1,112 @@
+h2 {
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+  background: #ffdcc3;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+/* ✅ CONTENEUR PRINCIPAL DU BUDGET */
+.budget-container {
+  margin-left: 200px; /* Espace pour la sidebar */
+  margin-top: 80px; /* Espace pour la navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  color: #150016;
+}
+
+/* ✅ STYLE DU FORMULAIRE */
+.budget-container form {
+  //   background: linear-gradient(135deg, #e3b6b1, #ffe3d8);
+  background-color: #eda8a1;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ CHAMPS DE FORMULAIRE */
+.budget-container label {
+  font-weight: bold;
+  color: #150016;
+}
+
+.budget-container input {
+  padding: 10px;
+  border: 1px solid #845162;
+  border-radius: 6px;
+  width: 100%;
+  background: white;
+  color: #150016;
+}
+
+/* ✅ STYLE DU BOUTON */
+.budget-container button {
+  background: linear-gradient(to right, #522c5d, #845162);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.budget-container button:hover {
+  background: linear-gradient(to right, #845162, #e3b6b1);
+}
+
+/* ✅ MESSAGE DE CONFIRMATION */
+.message {
+  background: linear-gradient(to right, #845162, #e3b6b1);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ TITRES */
+.budget-container h2 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #150016;
+  text-align: center;
+}
+
+/* ✅ LISTE DES BUDGETS */
+.budget-container ul {
+  list-style: none;
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+}
+
+.budget-container li {
+  background: linear-gradient(135deg, #e3b6b1, #ffe3d8);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ MESSAGE SI PAS DE BUDGET */
+.budget-container p {
+  text-align: center;
+  font-weight: bold;
+  color: #150016;
+}

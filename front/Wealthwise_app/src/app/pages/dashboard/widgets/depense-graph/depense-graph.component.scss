@@ -1,4 +1,27 @@
-.chart-container{
-    height :calc(100% - 100px);
-    width :100%;
+.chart-container {
+  height: calc(100% - 100px);
+  width: 100%;
+}
+.depenses {
+  //   color: #29104a;
+  color: black;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.gains {
+  //   color: #29104a;
+  color: black;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.calcul-container {
+  background: #845162; /* Fond clair */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 20px; /* Espacement intérieur */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  text-align: center; /* Centrer le texte */
+  max-width: 400px; /* Largeur max */
+  margin-bottom: 10px;
 }

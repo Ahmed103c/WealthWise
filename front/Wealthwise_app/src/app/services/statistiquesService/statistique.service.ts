@@ -13,14 +13,14 @@ export class StatistiqueService {
       id: 1,
       label: 'Ctégories des dépenses',
       content: StatisitqueCategoryComponent,
-      backgroundColor: '#845162',
+      backgroundColor: '#eda8a1',
       color: 'whitesmoke',
     },
     {
       id: 2,
       label: 'transactions : dépenses et gain ',
       content: StatistiqueDepenseGainComponent,
-      backgroundColor: '#845162',
+      backgroundColor: '#eda8a1',
       color: 'whitesmoke',
     },
   ]);

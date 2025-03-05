@@ -1,1 +1,25 @@
-<p>Bonjour</p>
+<div class="budget-container">
+    <h2>Créer votre budget</h2>
+    <form (ngSubmit)="creerBudget()">
+        <div>
+            <label for="montantAlloue">Montant Alloué :</label>
+            <input type="number" id="montantAlloue" name="montantAlloue" [(ngModel)]="budget.montantAlloue" required />
+        </div>
+        <button type="submit">Créer Budget</button>
+    </form>
+    <div *ngIf="message" class="message">{{ message }}</div>
+    <hr />
+    <h2>Liste des Budgets</h2>
+    <div *ngIf="budgets && budgets.length; else noBudget">
+        <ul>
+            <li *ngFor="let budget of budgets">
+                <strong>ID :</strong> {{ budget.id }} -
+                <strong>Montant Alloué :</strong>
+                {{ budget.montantAlloue | currency }}
+            </li>
+        </ul>
+    </div>
+    <ng-template #noBudget>
+        <p>Aucun budget trouvé.</p>
+    </ng-template>
+</div>

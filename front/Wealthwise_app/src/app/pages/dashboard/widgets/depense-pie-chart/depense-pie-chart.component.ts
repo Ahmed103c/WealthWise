@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   OnChanges,
   SimpleChanges,
+  ViewEncapsulation,
 } from '@angular/core';
 import { Chart, ChartConfiguration, ChartType, LabelItem } from 'chart.js';
 import { AllcategoryService } from '../../../../services/dashboardService/allcategory.service';
@@ -17,129 +18,23 @@ import { Transaction } from '../../../../services/transaction.service';
   templateUrl: './depense-pie-chart.component.html',
   styleUrls: ['./depense-pie-chart.component.css'],
   imports: [CommonModule],
+  encapsulation: ViewEncapsulation.None,
 })
-//AfterViewInit
-//implements OnChanges
 export class DepensePieChartComponent {
-  //@ViewChild('chart') chart!: ElementRef<HTMLCanvasElement>;
-
-  // categories: any[] = [];
-  // labels: string[] = [];
-  // data: number[] = [];
-  // uniqueItems: any[] = [];
-  // isloading: boolean = true;
-  // chartInstance!: Chart<'pie'>;
 
   constructor(
     private allcategoryservice: AllcategoryService,
     private alltransactionService: AlltransactionService
   ) {}
 
-  //   ngOnInit() {
-  //     this.allcategoryservice.getCategory();
-  //     this.allcategoryservice.categories$.subscribe((categories) => {
-  //       this.categories = categories;
-  //       this.uniqueItems = [
-  //         ...new Map(this.categories.map((item) => [item.name, item])).values(),
-  //       ];
-  //       console.log('✅ Catégories chargées:', this.categories);
 
-  //       if (this.categories.length > 0) {
-  //         this.isloading = false;
-  //         this.processData(); // Prépare les données du graphique
-  //         this.createChart(); // Crée le graphique si le canvas est dispo
-  //       }
-  //     });
-  //   }
-  //   ngOnChanges(changes: SimpleChanges) {
-  //     if (changes['categories'] && this.categories.length > 0) {
-  //       console.log(
-  //         '📊 Catégories mises à jour, tentative de création du graphique...'
-  //       );
-
-  //       if (this.chart && this.chart.nativeElement) {
-  //         console.log('✅ Canvas trouvé immédiatement, création du graphique...');
-  //         this.createChart();
-  //       } else {
-  //         console.warn(
-  //           '⚠️ Canvas non encore disponible, attendre via ngAfterViewChecked...'
-  //         );
-  //       }
-  //     }
-  //   }
-
-  //   ngAfterViewChecked() {
-  //     if (
-  //       !this.chartInstance &&
-  //       this.chart &&
-  //       this.chart.nativeElement &&
-  //       this.categories.length > 0
-  //     ) {
-  //       console.log(
-  //         '✅ Canvas trouvé dans ngAfterViewChecked, création du graphique...'
-  //       );
-  //       this.createChart();
-  //     }
-  //   }
-
-  //   processData() {
-  //     const categoryMap = new Map<string, number>();
-  //     this.categories.forEach(({ name, amount }) => {
-  //       categoryMap.set(name, (categoryMap.get(name) || 0) + amount);
-  //     });
-
-  //     this.labels = Array.from(categoryMap.keys());
-  //     this.data = Array.from(categoryMap.values());
-
-  //     console.log('📊 Labels :', this.labels);
-  //     console.log('📊 Data :', this.data);
-  //   }
-
-  //   createChart() {
-  //     if (!this.chart || !this.chart.nativeElement) {
-  //       console.error('⚠️ Canvas non disponible, attente...');
-  //       return;
-  //     }
-
-  //     const config: ChartConfiguration<'pie'> = {
-  //       type: 'pie',
-  //       data: {
-  //         labels: this.labels,
-  //         datasets: [
-  //           {
-  //             label: 'Dépenses',
-  //             data: this.data,
-  //             backgroundColor: [
-  //               'rgba(255, 99, 132, 0.7)',
-  //               'rgba(54, 162, 235, 0.7)',
-  //               'rgba(255, 206, 86, 0.7)',
-  //               'rgba(75, 192, 192, 0.7)',
-  //               'rgba(153, 102, 255, 0.7)',
-  //             ],
-  //             borderColor: [
-  //               'rgba(255, 99, 132, 1)',
-  //               'rgba(54, 162, 235, 1)',
-  //               'rgba(255, 206, 86, 1)',
-  //               'rgba(75, 192, 192, 1)',
-  //               'rgba(153, 102, 255, 1)',
-  //             ],
-  //             borderWidth: 1,
-  //           },
-  //         ],
-  //       },
-  //       options: {
-  //         maintainAspectRatio: false,
-  //         responsive: true,
-  //       },
-  //     };
-
-  //     this.chartInstance = new Chart(this.chart.nativeElement, config);
-  //   }
   @ViewChild('pieChart', { static: true })
   pieChart!: ElementRef<HTMLCanvasElement>;
   transactions: any[] = [];
   pieChartInstance!: Chart;
+  semaineEncours : string ='';
   ngOnInit() {
+    this.semaineEncours=this.getCurrentWeek();
     this.alltransactionService.getTransactions(); // Charge les transactions
 
     this.alltransactionService.allTransactions$.subscribe((transactions) => {
@@ -170,7 +65,10 @@ export class DepensePieChartComponent {
       });
 
       // Extraire les labels et data pour le Pie Chart
-      const labels = Array.from(categoriesMap.keys());
+      // const labels = Array.from(categoriesMap.keys());
+      const labels = Array.from(categoriesMap.entries()).map(
+        ([category, amount]) => `${category} : ${amount}€`
+      );
       const data = Array.from(categoriesMap.values());
 
       // Vérifier si le canvas est présent
@@ -297,5 +195,23 @@ export class DepensePieChartComponent {
     );
 
     return groupedTransactions;
+  }
+  getCurrentWeek(): string {
+    const today = new Date();
+    const firstDayOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 1)
+    ); // Lundi
+    const lastDayOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay() + 7)
+    ); // Dimanche
+    const options: Intl.DateTimeFormatOptions = {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    };
+    return `${firstDayOfWeek.toLocaleDateString(
+      'fr-FR',
+      options
+    )} - ${lastDayOfWeek.toLocaleDateString('fr-FR', options)}`;
   }
 }

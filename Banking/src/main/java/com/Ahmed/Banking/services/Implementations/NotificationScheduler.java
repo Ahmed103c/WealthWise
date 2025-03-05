@@ -27,7 +27,7 @@ public class NotificationScheduler {
 
 
     // ✅ **1️⃣ Notification automatique pour prélèvements à venir**
-    // @Scheduled(cron = "0 1 0 * * ?") // Exécution quotidienne à 00:01
+    //@Scheduled(cron = "0 1 0 * * ?") // Exécution quotidienne à 00:01
     public void notifierPrelevementsAVenir() {
         List<Transaction> transactions = transactionRepository.findAllByRecurrenceFrequencyNot(RecurrenceFrequency.NONE);
         LocalDate today = LocalDate.now();

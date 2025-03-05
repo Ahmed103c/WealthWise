@@ -41,7 +41,11 @@ export class StatisitqueCategoryComponent {
       });
 
       // Extraire les labels et data pour le Pie Chart
-      const labels = Array.from(categoriesMap.keys());
+      // const labels = Array.from(categoriesMap.keys());
+      const labels = Array.from(categoriesMap.entries()).map(
+        ([category, amount]) => `${category} : ${amount}€`
+      );
+
       const data = Array.from(categoriesMap.values());
 
       // Vérifier si le canvas est présent

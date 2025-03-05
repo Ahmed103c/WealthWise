@@ -1,3 +1,19 @@
+<br>
+<div class="semaine-en-cours" style="
+    margin-top :5px;
+    font: size 1.2em;
+    color: black;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block; ">
+    la semaine en cours : {{ semaineEncours }}
+</div>
+
+<div class="calcul-container">
+    <div class="depenses">Dépenses totales : {{ depensesTotale }} €</div>
+    <div class="gains">Gain total : {{ gainsTotale }} €</div>
+</div>
+
 <div class="chart-container">
     <canvas #chart></canvas>
 </div>
