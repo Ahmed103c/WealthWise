@@ -5,40 +5,52 @@ import { Observable } from 'rxjs';
 export interface Transaction {
   id?: number;
   compteId: number;
-  transactionDate: string; // Format ISO (ex: "2023-09-05T00:00:00.000Z")
+  transactionDate: string;
   description?: string;
   amount: number;
-  type: string; // "credit" ou "debit"
-  // Optionnellement, vous pouvez ajouter recurrenceFrequency, recurrenceEnd, categoryId, etc.
+  type: string;
+  recurrenceFrequency?: string;
+  recurrenceEnd?: string;
+  categoryId?: number;
+  categoryName?: string;
+}
+
+export interface Compte {
+  id: number;
+  nom: string;
+  balance: number;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionService {
-  private apiUrl = 'http://localhost:8070/transactions';
+  private transactionUrl = 'http://localhost:8070/transactions';
+  private compteUrl = 'http://localhost:8070/api/comptes';
 
   constructor(private http: HttpClient) {}
 
-  // Ajoute une nouvelle transaction
+  // Ajout d'une transaction (POST)
   addTransaction(transaction: Transaction): Observable<Transaction> {
-    return this.http.post<Transaction>(this.apiUrl, transaction);
+    return this.http.post<Transaction>(this.transactionUrl, transaction);
   }
 
-  // Récupère les transactions pour un compte donné
+  // Récupération des transactions d'un utilisateur via l'endpoint approprié
+  getTransactionsByUserId(userId: number): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(
+      `${this.transactionUrl}/user/${userId}`
+    );
+  }
+
+  // Récupération des transactions d'un compte (si besoin)
   getTransactionsByCompte(compteId: number): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.apiUrl}/compte/${compteId}`);
+    return this.http.get<Transaction[]>(
+      `${this.transactionUrl}/compte/${compteId}`
+    );
   }
 
-  // Importer des transactions depuis un fichier CSV
-  importTransactions(file: File): Observable<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<string>(`${this.apiUrl}/import`, formData);
-  }
-
-  // Exporter les transactions en CSV
-  exportTransactions(): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/export`, { responseType: 'blob' });
+  // Récupération des comptes de l'utilisateur
+  getUserComptes(userId: number): Observable<Compte[]> {
+    return this.http.get<Compte[]>(`${this.compteUrl}/utilisateur/${userId}`);
   }
 }

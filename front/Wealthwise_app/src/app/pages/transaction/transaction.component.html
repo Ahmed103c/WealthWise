@@ -1,118 +1,93 @@
-<!-- <div class="info-page">
-    <h2>📜 Transactions</h2>
-  
-    
-    <div class="info-section">
-      <h3>➕ Add Transaction</h3>
-      <label>Date:</label>
-      <input type="date" [(ngModel)]="newTransaction.date" required />
-  
-      <label>Description:</label>
-      <input type="text" [(ngModel)]="newTransaction.description" required />
-  
-      <label>Amount (€):</label>
-      <input type="number" [(ngModel)]="newTransaction.montant" required />
-  
-      <label>Type:</label>
-      <select [(ngModel)]="newTransaction.type">
-        <option value="credit">Credit</option>
-        <option value="debit">Debit</option>
-      </select>
-  
-      <button class="save-btn" (click)="addTransaction()">💾 Add</button>
-    </div>
-  
+<div class="info-page">
+  <h2>📜 Transactions</h2>
 
-    <div class="info-section">
-      <h3>📂 Import Transactions</h3>
-      <input type="file" (change)="onFileSelected($event)" />
-      <button class="save-btn" (click)="importTransactions()">📥 Import</button>
-    </div>
+  <!-- Formulaire d'ajout -->
+  <div class="info-section">
+    <h3>➕ Ajouter une Transaction</h3>
 
-    <div class="info-section">
-      <h3>📤 Export Transactions</h3>
-      <button class="save-btn" (click)="exportTransactions()">⬇ Download CSV</button>
-    </div>
+    <label>Compte :</label>
+    <select [(ngModel)]="newTransaction.compteId">
+      <option value="0">Sélectionner un compte</option>
+      <option *ngFor="let compte of comptes" [value]="compte.id">{{ compte.nom }}</option>
+    </select>
 
-    <div class="info-section">
-      <h3>📊 Transactions History</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount (€)</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let transaction of transactions">
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.description }}</td>
-            <td>{{ transaction.montant }}</td>
-            <td>{{ transaction.type }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  
-    <p *ngIf="message">{{ message }}</p>
+    <label>Date :</label>
+    <input type="date" [(ngModel)]="newTransaction.transactionDate" required />
+
+    <label>Description :</label>
+    <input type="text" [(ngModel)]="newTransaction.description" required />
+
+    <label>Montant (€) :</label>
+    <input type="number" [(ngModel)]="newTransaction.amount" required />
+
+    <label>Type :</label>
+    <select [(ngModel)]="newTransaction.type">
+      <!-- Les valeurs doivent être EXACTEMENT "CREDIT", "DEBIT", ou "DEPENSE" -->
+      <option value="CREDIT">CREDIT</option>
+      <option value="DEBIT">DEBIT</option>
+
+    </select>
+
+    <label>Récurrence :</label>
+    <select [(ngModel)]="newTransaction.recurrenceFrequency">
+      <option *ngFor="let option of recurrenceOptions" [value]="option">{{ option }}</option>
+    </select>
+
+    <label *ngIf="newTransaction.recurrenceFrequency !== 'NONE'">Date de fin :</label>
+    <input *ngIf="newTransaction.recurrenceFrequency !== 'NONE'" type="date"
+      [(ngModel)]="newTransaction.recurrenceEnd" />
+
+    <button class="save-btn" (click)="addTransaction()">💾 Ajouter</button>
   </div>
-   -->
 
-<div class="transaction-container">
-  <h2>Ajouter une Transaction</h2>
-  <form (ngSubmit)="addTransaction()">
-    <div>
-      <label for="compteId">ID Compte :</label>
-      <input type="number" id="compteId" name="compteId" [(ngModel)]="newTransaction.compteId" required>
-    </div>
-    <div>
-      <label for="transactionDate">Date :</label>
-      <input type="date" id="transactionDate" name="transactionDate"
-        [value]="formatDate(newTransaction.transactionDate)" (change)="onDateChange($event)" required>
-    </div>
-    <div>
-      <label for="description">Description :</label>
-      <input type="text" id="description" name="description" [(ngModel)]="newTransaction.description">
-    </div>
-    <div>
-      <label for="amount">Montant :</label>
-      <input type="number" id="amount" name="amount" [(ngModel)]="newTransaction.amount" required>
-    </div>
-    <div>
-      <label for="type">Type :</label>
-      <select id="type" name="type" [(ngModel)]="newTransaction.type" required>
-        <option value="  CREDIT">CREDIT</option>
-        <option value="debit">Débit</option>
+  <div class="filters-container">
+    <div class="filter-group">
+      <label>Compte :</label>
+      <select [(ngModel)]="selectedCompteId" (change)="applyFilters()">
+        <option [ngValue]="0">Tous</option>
+        <option *ngFor="let compte of comptes" [ngValue]="compte.id">{{ compte.nom }}</option>
       </select>
     </div>
-    <button type="submit">Ajouter Transaction</button>
-  </form>
 
-  <div *ngIf="transactionMessage" class="message">{{ transactionMessage }}</div>
+    <div class="filter-group">
+      <label>Date début :</label>
+      <input type="date" [(ngModel)]="filterStartDate" (change)="applyFilters()" />
+    </div>
 
-  <hr>
-
-  <h2>Liste des Transactions</h2>
-  <div class="search-container">
-    <label for="accountSearch">ID Compte :</label>
-    <input type="number" id="accountSearch" name="accountSearch" [(ngModel)]="searchCompteId">
-    <button (click)="loadTransactions()">Charger Transactions</button>
+    <div class="filter-group">
+      <label>Date fin :</label>
+      <input type="date" [(ngModel)]="filterEndDate" (change)="applyFilters()" />
+    </div>
   </div>
 
-  <div *ngIf="transactions && transactions.length; else noTransactions">
-    <ul>
-      <li *ngFor="let tx of transactions">
-        <strong>ID :</strong> {{ tx.id }} -
-        <strong>Date :</strong> {{ tx.transactionDate | date:'shortDate' }} -
-        <strong>Description :</strong> {{ tx.description }} -
-        <strong>Montant :</strong> {{ tx.amount | currency }} -
-        <strong>Type :</strong> {{ tx.type }}
-      </li>
-    </ul>
+  <!-- Tableau des transactions -->
+  <div class="info-section">
+    <h3>📊 Transactions</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Compte</th>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Montant</th>
+          <th>Type</th>
+          <th>Récurrence</th>
+          <th>Catégorie</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of filteredTransactions">
+          <td>{{ transaction.compteId }}</td>
+          <td>{{ transaction.transactionDate | date:'shortDate' }}</td>
+          <td>{{ transaction.description }}</td>
+          <td>{{ transaction.amount | currency }}</td>
+          <td>{{ transaction.type }}</td>
+          <td>{{ transaction.recurrenceFrequency }}</td>
+          <td>{{ transaction.categoryName }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <ng-template #noTransactions>
-    <p>Aucune transaction trouvée pour ce compte.</p>
-  </ng-template>
+
+  <p *ngIf="transactionMessage">{{ transactionMessage }}</p>
 </div>

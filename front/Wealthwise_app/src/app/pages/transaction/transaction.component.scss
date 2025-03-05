@@ -1,25 +1,179 @@
-.transaction-container {
-  margin-top: 100px;
-  margin-left: 250px; /* Décale le box à gauche de 105px */
-  margin-right: 10px;
-  padding: 20px; /* Ajoute de l'espace autour des widgets à l'intérieur du box */
-  box-sizing: border-box; /* Inclut le padding dans les dimensions du box */
-  border-radius: 16px;
-  max-width: 600px;
+/* ✅ STYLE GÉNÉRAL */
+.info-page {
+  margin-left: 200px; /* Laisse la place pour la sidebar */
+  margin-top: 70px;   /* Laisse la place pour la navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #FFE3D8, #E3B6B1);
+  color: #150016;
 }
-form div,
-.search-container {
-  margin-bottom: 1rem;
+
+/* ✅ SECTIONS */
+.info-section {
+  width: 90%;
+  max-width: 800px;
+  background: linear-gradient(135deg, #E3B6B1, #FFE3D8);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
+  text-align: center;
 }
-.message {
-  color: red;
-  margin-top: 1rem;
+
+/* ✅ TITRES */
+h2, h3 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #29104A;
+  text-transform: uppercase;
+  margin-bottom: 15px;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+/* ✅ CHAMPS DE FORMULAIRE */
+label {
+  font-weight: bold;
+  color: #150016;
+  display: block;
+  margin-top: 10px;
 }
-li {
-  padding: 0.5rem;
-  border-bottom: 1px solid #ccc;
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #E3B6B1;
+  color: #150016;
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2), inset -5px -5px 10px rgba(255, 255, 255, 0.5);
+  margin-top: 5px;
+  transition: 0.3s;
 }
+
+input:focus, select:focus {
+  outline: none;
+  background: #FFE3D8;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.5);
+}
+
+/* ✅ BOUTONS */
+.save-btn {
+  width: 100%;
+  background: linear-gradient(to right, #522C5D, #845162);
+  color: #FFE3D8;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.5);
+  margin-top: 15px;
+}
+
+.save-btn:hover {
+  background: linear-gradient(to right, #845162, #E3B6B1);
+}
+
+/* ✅ TABLEAU TRANSACTIONS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: linear-gradient(135deg, #E3B6B1, #FFE3D8);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  color: #150016;
+}
+
+th {
+  background: #29104A;
+  color: #FFE3D8;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ MESSAGES */
+p {
+  font-size: 14px;
+  font-weight: bold;
+  color: #522C5D;
+  text-align: center;
+}
+/* ✅ FILTRES AVANCÉS */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #E3B6B1, #FFE3D8);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px rgba(255, 255, 255, 0.5);
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .filter-group label {
+    font-weight: bold;
+    color: #29104A;
+    margin-bottom: 5px;
+  }
+  
+  .filter-group select, .filter-group input {
+    width: 200px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #E3B6B1;
+    color: #150016;
+    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2), inset -5px -5px 10px rgba(255, 255, 255, 0.5);
+    transition: 0.3s;
+    text-align: center;
+  }
+  
+  .filter-group select:focus, .filter-group input:focus {
+    outline: none;
+    background: #FFE3D8;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.5);
+  }
+  
+  /* ✅ RESPONSIVE : Colonne sur mobile */
+  @media (max-width: 768px) {
+    .filters-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .filter-group {
+      width: 100%;
+    }
+  
+    .filter-group select, .filter-group input {
+      width: 100%;
+    }
+  }

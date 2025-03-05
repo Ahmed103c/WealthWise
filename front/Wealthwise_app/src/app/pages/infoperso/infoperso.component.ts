@@ -11,7 +11,7 @@ import { ChangeDetectorRef } from '@angular/core';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './infoperso.component.html',
-  styleUrls: ['./infoperso.component.scss']
+  styleUrls: ['./infoperso.component.scss'],
 })
 export class InfopersoComponent implements OnInit {
   user: any = {}; // Informations utilisateur
@@ -25,11 +25,12 @@ export class InfopersoComponent implements OnInit {
   // Initialisation des données pour le formulaire
   nouveauCompte = {
     utilisateur: { id: 0 },
+    nom: '',
     externalId: '',
     institution: '',
     iban: '',
     currency: 'EUR',
-    balance: 0
+    balance: 0,
   };
 
   constructor(
@@ -41,7 +42,7 @@ export class InfopersoComponent implements OnInit {
 
   ngOnInit(): void {
     const userId = this.authService.getUserIdFromToken();
-    console.log("🔍 User ID récupéré :", userId);
+    console.log('🔍 User ID récupéré :', userId);
 
     if (!userId) {
       this.message = 'Utilisateur non authentifié.';
@@ -49,13 +50,13 @@ export class InfopersoComponent implements OnInit {
       return;
     }
 
-    // ✅ Associer l'ID utilisateur à `this.user`
+    // ✅ Associer l'ID utilisateur à this.user
     this.user = { id: userId };
 
-    // ✅ Associer aussi à `this.nouveauCompte`
+    // ✅ Associer aussi à this.nouveauCompte
     this.nouveauCompte.utilisateur.id = userId;
 
-    console.log("✅ Initialisation `this.nouveauCompte` :", this.nouveauCompte);
+    console.log('✅ Initialisation this.nouveauCompte :', this.nouveauCompte);
 
     // ✅ Charger les données utilisateur et comptes
     this.loadUserData(userId);
@@ -70,16 +71,16 @@ export class InfopersoComponent implements OnInit {
           nom: data.nom,
           prenom: data.prenom,
           email: data.email,
-          balance: data.balance || 0
+          balance: data.balance || 0,
         };
-        console.log("✅ Balance après mise à jour :", this.user.balance);
-        console.log("✅ Utilisateur mis à jour :", this.user); // Debug
+        console.log('✅ Balance après mise à jour :', this.user.balance);
+        console.log('✅ Utilisateur mis à jour :', this.user); // Debug
         this.loadComptes(userId);
       },
       error: (err) => {
         this.message = err.message;
         console.error(err);
-      }
+      },
     });
   }
 
@@ -87,7 +88,7 @@ export class InfopersoComponent implements OnInit {
   loadComptes(userId: number): void {
     this.compteService.getComptesByUserId(userId).subscribe({
       next: (data) => {
-        console.log("✅ Mise à jour de la liste des comptes :", data);
+        console.log('✅ Mise à jour de la liste des comptes :', data);
         this.comptes = data || []; // ✅ Mise à jour immédiate
 
         // ✅ Forcer Angular à voir la modification
@@ -96,8 +97,8 @@ export class InfopersoComponent implements OnInit {
       },
       error: (err) => {
         this.message = err.message;
-        console.error("❌ Erreur lors du chargement des comptes", err);
-      }
+        console.error('❌ Erreur lors du chargement des comptes', err);
+      },
     });
   }
 
@@ -106,15 +107,17 @@ export class InfopersoComponent implements OnInit {
     console.log("📌 Vérification avant l'envoi :", this.nouveauCompte);
 
     if (!this.user || !this.user.id || this.user.id === 0) {
-      console.error("🚨 Erreur : ID utilisateur invalide :", this.user);
-      alert("Erreur : Impossible d'ajouter le compte, l'utilisateur n'est pas valide.");
+      console.error('🚨 Erreur : ID utilisateur invalide :', this.user);
+      alert(
+        "Erreur : Impossible d'ajouter le compte, l'utilisateur n'est pas valide."
+      );
       return;
     }
 
     // ✅ Associer le bon ID utilisateur avant l’envoi
     this.nouveauCompte.utilisateur.id = this.user.id;
 
-    console.log("📌 Données envoyées :", this.nouveauCompte); // Debug
+    console.log('📌 Données envoyées :', this.nouveauCompte); // Debug
 
     this.compteService.ajouterCompteManuel(this.nouveauCompte).subscribe({
       next: () => {
@@ -126,35 +129,42 @@ export class InfopersoComponent implements OnInit {
       },
       error: (err) => {
         console.error("❌ Erreur lors de l'ajout du compte :", err);
-      }
+      },
     });
   }
 
   authentifierAvecGoCardless() {
-    console.log("🔍 Vérification `this.user` avant l'authentification :", this.user);
+    console.log(
+      "🔍 Vérification this.user avant l'authentification :",
+      this.user
+    );
 
     if (!this.user || !this.user.id) {
       console.error("🚨 Erreur : L'ID utilisateur est introuvable !");
-      alert("Erreur : Votre session utilisateur est invalide.");
+      alert('Erreur : Votre session utilisateur est invalide.');
       return;
     }
 
-    console.log("✅ User ID confirmé :", this.user.id);
+    console.log('✅ User ID confirmé :', this.user.id);
 
     this.userService.authenticateWithGoCardless(this.user.id).subscribe(
       (response: any) => {
         if (response.authLink && response.requisitionId) {
           this.requisitionId = response.requisitionId;
-          console.log("✅ Requisition ID stocké :", this.requisitionId);
-          console.log("📌 Ouverture de GoCardless :", response.authLink);
+          console.log('✅ Requisition ID stocké :', this.requisitionId);
+          console.log('📌 Ouverture de GoCardless :', response.authLink);
 
-          const newTab = window.open(response.authLink, "_blank");
+          const newTab = window.open(response.authLink, '_blank');
 
-          if (!newTab || newTab.closed || typeof newTab.closed === "undefined") {
-            alert("🚨 Pop-up bloquée ! Autorisez les pop-ups.");
+          if (
+            !newTab ||
+            newTab.closed ||
+            typeof newTab.closed === 'undefined'
+          ) {
+            alert('🚨 Pop-up bloquée ! Autorisez les pop-ups.');
           }
         } else {
-          console.error("⚠️ Erreur : AuthLink ou RequisitionId manquant.");
+          console.error('⚠ Erreur : AuthLink ou RequisitionId manquant.');
         }
       },
       (error) => {
@@ -165,31 +175,33 @@ export class InfopersoComponent implements OnInit {
 
   verifierEtRecupererComptes() {
     if (!this.requisitionId) {
-      alert("⚠️ Veuillez d'abord vous authentifier avec GoCardless !");
+      alert("⚠ Veuillez d'abord vous authentifier avec GoCardless !");
       return;
     }
 
-    console.log("🔍 Vérification du Requisition ID :", this.requisitionId);
+    console.log('🔍 Vérification du Requisition ID :', this.requisitionId);
 
-    this.userService.fetchAccountsFromGoCardless(this.requisitionId, this.user.id).subscribe(
-      (response: any) => {
-        console.log("✅ Réponse reçue du backend :", response);
+    this.userService
+      .fetchAccountsFromGoCardless(this.requisitionId, this.user.id)
+      .subscribe(
+        (response: any) => {
+          console.log('✅ Réponse reçue du backend :', response);
 
-        if (!response || !response.accounts) {
-          console.error("❌ Erreur : Réponse JSON invalide !");
-          return;
+          if (!response || !response.accounts) {
+            console.error('❌ Erreur : Réponse JSON invalide !');
+            return;
+          }
+
+          // ✅ Recharger les comptes
+          this.loadComptes(this.user.id);
+
+          // ✅ Forcer la mise à jour de l'affichage
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          console.error('❌ Erreur lors de la récupération des comptes', error);
         }
-
-        // ✅ Recharger les comptes
-        this.loadComptes(this.user.id);
-
-        // ✅ Forcer la mise à jour de l'affichage
-        this.cdr.detectChanges();
-      },
-      (error) => {
-        console.error("❌ Erreur lors de la récupération des comptes", error);
-      }
-    );
+      );
   }
 
   toggleAjoutCompte() {
@@ -197,20 +209,17 @@ export class InfopersoComponent implements OnInit {
       // ✅ Réinitialiser tous les champs y compris utilisateur
       this.nouveauCompte = {
         utilisateur: { id: 0 },
+        nom: '',
         externalId: '',
         institution: '',
         iban: '',
         currency: '',
-        balance: 0
+        balance: 0,
       };
     }
 
     this.modeAjout = !this.modeAjout;
   }
-
-
-
-
 
   saveChanges() {
     alert('Modifications enregistrées avec succès !');

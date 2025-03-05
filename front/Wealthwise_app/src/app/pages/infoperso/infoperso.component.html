@@ -28,6 +28,10 @@
         <div *ngFor="let compte of comptes; let i = index" class="account-card">
           <h3 class="account-title">Compte {{ i + 1 }}</h3>
           <div class="info-row">
+            <label><i class="fas fa-university"></i> Nom :</label>
+            <p>{{ compte.nom }}</p>
+          </div>
+          <div class="info-row">
             <label><i class="fas fa-university"></i> Institution :</label>
             <p>{{ compte.institution }}</p>
           </div>
@@ -63,6 +67,8 @@
         <span class="close" (click)="toggleAjoutCompte()">&times;</span>
         <h2>Ajouter un Compte</h2>
         <form (ngSubmit)="ajouterCompteManuel()">
+          <label for="nom"> Nom :</label>
+          <input type="text" id="nom" name="nom" [(ngModel)]="nouveauCompte.nom" required>
           <label for="externalId">ID Externe :</label>
           <input type="text" id="externalId" name="externalId" [(ngModel)]="nouveauCompte.externalId" required>
 

@@ -46,6 +46,9 @@ export class CompteService {
    * @returns Liste des comptes liés à l'utilisateur
    */
   fetchComptesDepuisGoCardless(requisitionId: string, userId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/fetch-accounts/${requisitionId}/${userId}`, {});
+    return this.http.post<any>(
+      `${this.apiUrl}/fetch-accounts/${requisitionId}/${userId}`,
+      {}
+    );
   }
 }
