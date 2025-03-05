@@ -1,25 +1,73 @@
-<div class="budget-container">
-    <h2>Créer votre budget</h2>
-    <form (ngSubmit)="creerBudget()">
-        <div>
-            <label for="montantAlloue">Montant Alloué :</label>
-            <input type="number" id="montantAlloue" name="montantAlloue" [(ngModel)]="budget.montantAlloue" required />
-        </div>
-        <button type="submit">Créer Budget</button>
-    </form>
-    <div *ngIf="message" class="message">{{ message }}</div>
-    <hr />
-    <h2>Liste des Budgets</h2>
-    <div *ngIf="budgets && budgets.length; else noBudget">
-        <ul>
-            <li *ngFor="let budget of budgets">
-                <strong>ID :</strong> {{ budget.id }} -
-                <strong>Montant Alloué :</strong>
-                {{ budget.montantAlloue | currency }}
-            </li>
-        </ul>
+<div class="info-page">
+    <h2>🔮 Budget Dashboard</h2>
+  
+    <div class="budget-container">
+      <!-- ✅ Panneau Gauche : Formulaires -->
+      <div class="left-panel">
+        <h3>🆕 Créer un Budget</h3>
+        <label>Montant Alloué (€) :</label>
+        <input type="number" [(ngModel)]="newBudget.montantAlloue" required />
+  
+        <label>Date de début :</label>
+        <input type="date" [(ngModel)]="newBudget.startDate" required />
+  
+        <label>Date de fin :</label>
+        <input type="date" [(ngModel)]="newBudget.endDate" required />
+  
+        <button class="save-btn" (click)="creerBudget()">💾 Créer</button>
+      </div>
+  
+      <!-- ✅ Panneau Allocation -->
+      <div class="left-panel">
+        <h3>📂 Allouer un Budget</h3>
+        <label>Budget :</label>
+        <select [(ngModel)]="selectedBudgetId">
+          <option [ngValue]="0">Sélectionner un budget</option>
+          <option *ngFor="let budget of budgets" [ngValue]="budget.id">
+            Budget #{{ budget.id }} - {{ budget.montantAlloue | currency }}
+          </option>
+        </select>
+  
+        <label>Catégorie :</label>
+        <select [(ngModel)]="selectedCategorieId">
+          <option [ngValue]="0">Sélectionner une catégorie</option>
+          <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+        </select>
+  
+        <label>Montant (€) :</label>
+        <input type="number" [(ngModel)]="allocationMontant" required />
+  
+        <button class="save-btn" (click)="allouerBudget()">💾 Allouer</button>
+      </div>
+  
+      <!-- ✅ Tableau Budgets -->
+      <div class="table-container">
+        <h3>📋 Budgets</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Montant Alloué</th>
+              <th>Date Début</th>
+              <th>Date Fin</th>
+              <th>Allocations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let budget of budgets">
+              <td>{{ budget.id }}</td>
+              <td>{{ budget.montantAlloue | currency }}</td>
+              <td>{{ budget.startDate | date:'shortDate' }}</td>
+              <td>{{ budget.endDate | date:'shortDate' }}</td>
+              <td>
+                <div *ngFor="let bc of budget.budgetCategories">
+                  {{ bc.category.name }}: {{ bc.montantAlloue | currency }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <ng-template #noBudget>
-        <p>Aucun budget trouvé.</p>
-    </ng-template>
-</div>
+  </div>
+  

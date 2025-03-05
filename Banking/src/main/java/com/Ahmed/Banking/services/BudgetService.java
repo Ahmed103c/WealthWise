@@ -11,4 +11,6 @@ public interface BudgetService {
     List<Budget> getBudgetsParUtilisateur(Integer utilisateurId);
     BudgetCategorie allouerBudgetCategorie(Integer budgetId, Integer categorieId, BigDecimal montant);
     BigDecimal getBudgetRestant(Integer budgetId);
+    Budget saveBudget(Budget budget);
+
 }

@@ -22,10 +22,12 @@ public class CategoryService {
         this.restTemplate = restTemplate;
     }
 
-    // ✅ Classification automatique via FastAPI
+    // Classification automatique via FastAPI
     public Category predictCategory(String description) {
+        // Si la description est vide, retourner la catégorie "Inconnue" depuis la base
         if (description == null || description.trim().isEmpty()) {
-            return new Category(0, "Inconnue");
+            return categoryRepository.findByName("Inconnue")
+                    .orElseGet(() -> categoryRepository.save(new Category(null, "Inconnue")));
         }
 
         Map<String, String> requestBody = new HashMap<>();
@@ -41,14 +43,22 @@ public class CategoryService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String predictedCategoryName = (String) response.getBody().get("predicted_category");
 
-                // Vérifier si la catégorie existe déjà, sinon l'ajouter
-                return categoryRepository.findByName(predictedCategoryName)
-                        .orElseGet(() -> categoryRepository.save(new Category(null, predictedCategoryName)));
+                // Rechercher la catégorie prédite dans la base
+                Optional<Category> optCategory = categoryRepository.findByName(predictedCategoryName);
+                if (optCategory.isPresent()) {
+                    return optCategory.get();
+                } else {
+                    // La catégorie n'existe pas : on la crée avec le nom prédit
+                    Category newCategory = new Category(null, predictedCategoryName);
+                    return categoryRepository.save(newCategory);
+                }
             }
         } catch (Exception e) {
             System.err.println("🚨 Erreur lors de la communication avec FastAPI : " + e.getMessage());
         }
 
-        return new Category(0, "Inconnue");
+        // En cas d'erreur, on peut également créer la catégorie avec le nom "Inconnue"
+        Category defaultCategory = new Category(null, "Inconnue");
+        return categoryRepository.save(defaultCategory);
     }
 }

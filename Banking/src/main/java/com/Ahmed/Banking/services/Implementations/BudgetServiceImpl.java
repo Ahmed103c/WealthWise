@@ -191,4 +191,9 @@ public class BudgetServiceImpl implements BudgetService {
             }
         }
     }
+    @Override
+    public Budget saveBudget(Budget budget) {
+        return budgetRepository.save(budget);
+    }
+
 }

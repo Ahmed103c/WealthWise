@@ -1,5 +1,6 @@
 package com.Ahmed.Banking.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
     @ManyToOne  // ✅ Correction : Ajout de la relation avec Utilisateur
     @JoinColumn(name = "utilisateur_id", nullable = false)  // ✅ Assure un bon mapping SQL
     private Utilisateur utilisateur;  // ✅ Modification de `userId` à `utilisateur`
@@ -27,6 +29,7 @@ public class Budget {
     private LocalDate startDate;
     private LocalDate endDate;
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<BudgetCategorie> budgetCategories;
 
 }

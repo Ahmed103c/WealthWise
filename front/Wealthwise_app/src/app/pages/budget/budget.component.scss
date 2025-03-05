@@ -1,112 +1,141 @@
-h2 {
-  font-size: 24px;
-  color: #333;
-  text-align: center;
-  background: #ffdcc3;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
-/* ✅ CONTENEUR PRINCIPAL DU BUDGET */
-.budget-container {
-  margin-left: 200px; /* Espace pour la sidebar */
-  margin-top: 80px; /* Espace pour la navbar */
+/* ✅ STYLE GLOBAL */
+.info-page {
+  margin-left: 200px;
+  margin-top: 70px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
   min-height: 100vh;
+  background: linear-gradient(to bottom, #FFF5F1, #FADCD6);
   color: #150016;
 }
 
-/* ✅ STYLE DU FORMULAIRE */
-.budget-container form {
-  //   background: linear-gradient(135deg, #e3b6b1, #ffe3d8);
-  background-color: #eda8a1;
+/* ✅ GRILLE PRINCIPALE */
+.budget-container {
+  width: 95%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 500px;
+}
+
+/* ✅ FORMULAIRES */
+.left-panel {
+  background: linear-gradient(145deg, #FCECE8, #FFE8E3);
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1), 
+              -10px -10px 30px rgba(255, 255, 255, 0.7);
   display: flex;
   flex-direction: column;
   gap: 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 /* ✅ CHAMPS DE FORMULAIRE */
-.budget-container label {
+label {
   font-weight: bold;
-  color: #150016;
+  color: #29104A;
+  margin-top: 10px;
 }
 
-.budget-container input {
-  padding: 10px;
-  border: 1px solid #845162;
-  border-radius: 6px;
+input, select {
   width: 100%;
-  background: white;
-  color: #150016;
-}
-
-/* ✅ STYLE DU BOUTON */
-.budget-container button {
-  background: linear-gradient(to right, #522c5d, #845162);
-  color: white;
   padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
+  background: #FFF5F1;
+  color: #29104A;
   font-size: 16px;
-  cursor: pointer;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.1),
+              inset -4px -4px 8px rgba(255, 255, 255, 0.7);
   transition: 0.3s;
 }
 
-.budget-container button:hover {
-  background: linear-gradient(to right, #845162, #e3b6b1);
+input:focus, select:focus {
+  outline: none;
+  background: #FFE3D8;
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), 
+              inset -2px -2px 5px rgba(255, 255, 255, 0.6);
 }
 
-/* ✅ MESSAGE DE CONFIRMATION */
-.message {
-  background: linear-gradient(to right, #845162, #e3b6b1);
+/* ✅ BOUTONS 3D */
+.save-btn {
+  width: 100%;
+  background: linear-gradient(145deg, #845162, #522C5D);
   color: white;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), 
+              -5px -5px 10px rgba(255, 255, 255, 0.3);
   margin-top: 15px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ TITRES */
-.budget-container h2 {
-  font-size: 22px;
-  margin-bottom: 15px;
-  color: #150016;
+.save-btn:hover {
+  background: linear-gradient(to right, #522C5D, #845162);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3), 
+              -3px -3px 6px rgba(255, 255, 255, 0.4);
+}
+
+.save-btn:active {
+  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.3), 
+              inset -5px -5px 10px rgba(255, 255, 255, 0.3);
+}
+
+/* ✅ TABLEAU PLUS LARGE */
+.table-container {
+  grid-column: span 2; /* 🔥 Prend toute la largeur des deux formulaires */
+  width: 100%;
+  background: linear-gradient(145deg, #FCECE8, #FFE8E3);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), 
+              -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #FCECE8, #FFE8E3);
+}
+
+th, td {
+  padding: 15px;
   text-align: center;
+  color: #29104A;
 }
 
-/* ✅ LISTE DES BUDGETS */
-.budget-container ul {
-  list-style: none;
-  padding: 0;
-  width: 90%;
-  max-width: 500px;
-}
-
-.budget-container li {
-  background: linear-gradient(135deg, #e3b6b1, #ffe3d8);
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* ✅ MESSAGE SI PAS DE BUDGET */
-.budget-container p {
-  text-align: center;
+th {
+  background: #845162;
+  color: #FFE3D8;
   font-weight: bold;
-  color: #150016;
+  text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transition: 0.3s;
+}
+
+/* ✅ RESPONSIVE */
+@media (max-width: 768px) {
+  .budget-container {
+    grid-template-columns: 1fr;
+  }
+
+  .table-container {
+    grid-column: span 1; /* Sur mobile, il redevient une seule colonne */
+  }
 }

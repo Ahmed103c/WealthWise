@@ -1,5 +1,6 @@
 package com.Ahmed.Banking.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class BudgetCategorie {
 
     @ManyToOne
     @JoinColumn(name = "budget_id", nullable = false)
+    @JsonBackReference
     private Budget budget;
 
     @ManyToOne
