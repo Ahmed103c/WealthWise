@@ -6,6 +6,7 @@ import {
 } from '../../services/transaction.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-transaction',
@@ -39,15 +40,20 @@ export class TransactionComponent implements OnInit {
 
   transactionMessage: string = '';
 
-  constructor(private transactionService: TransactionService) {}
+  constructor(
+    private transactionService: TransactionService,
+    private authservice: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadTransactions();
-    this.loadComptes();
+    let userId = this.authservice.getUserIdFromToken();
+    if (userId) {
+      this.loadTransactions(userId);
+      this.loadComptes(userId);
+    }
   }
 
-  loadTransactions(): void {
-    const userId = 1; // Remplacez par l'ID de l'utilisateur connecté
+  loadTransactions(userId: number): void {
     this.transactionService.getTransactionsByUserId(userId).subscribe({
       next: (data) => {
         this.transactions = data;
@@ -61,8 +67,7 @@ export class TransactionComponent implements OnInit {
     });
   }
 
-  loadComptes(): void {
-    const userId = 1; // Remplacez par l'ID de l'utilisateur connecté
+  loadComptes(userId: number): void {
     this.transactionService.getUserComptes(userId).subscribe({
       next: (comptes) => (this.comptes = comptes),
       error: (err) => {
@@ -119,7 +124,10 @@ export class TransactionComponent implements OnInit {
     this.transactionService.addTransaction(this.newTransaction).subscribe({
       next: (res) => {
         this.transactionMessage = '✅ Transaction ajoutée avec succès';
-        this.loadTransactions();
+        let userId= this.authservice.getUserIdFromToken();
+        if (userId) {
+          this.loadTransactions(userId);
+        }
         // Réinitialiser le formulaire d'ajout
         this.newTransaction = {
           compteId: 0,
