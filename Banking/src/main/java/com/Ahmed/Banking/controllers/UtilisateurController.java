@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import com.Ahmed.Banking.models.Utilisateur;
 import com.Ahmed.Banking.models.Compte;
 import com.Ahmed.Banking.security.JwtTokenProvider;
-import org.springframework.web.bind.annotation.RequestHeader;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -108,5 +108,9 @@ public class UtilisateurController {
         return ResponseEntity.ok(response);
     }
 
-
+    @GetMapping("/{id}/balance")
+        public ResponseEntity<BigDecimal> getBalance(@PathVariable Integer id) {
+        BigDecimal balance = service.getBalanceById(id);
+        return ResponseEntity.ok(balance);  // Retourne la balance avec un code HTTP 200
+    }
 }

@@ -79,8 +79,4 @@ public class Compte {
         this.balance = balance;
         this.isConjoint = isConjoint;
     }
-
-
-
-
 }

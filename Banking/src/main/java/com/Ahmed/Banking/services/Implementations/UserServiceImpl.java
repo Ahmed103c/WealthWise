@@ -1,5 +1,6 @@
 package com.Ahmed.Banking.services.Implementations;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,11 @@ public class UserServiceImpl implements UtilisateurService {
                 .orElseThrow(() -> new EntityNotFoundException("No user was found with the provided id" + id));
     }
 
+    public BigDecimal getBalanceById(Integer id) {
+    Utilisateur utilisateur = repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("No user was found with the provided id" + id));
+    return utilisateur.getBalance();  // Suppose que 'getBalance()' renvoie la balance de l'utilisateur
+}
 
 
     @Override

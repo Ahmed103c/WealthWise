@@ -129,8 +129,12 @@ export class AuthService {
     );
     console.log(this.http.get<any>(chatBotUrl));
 
-    return this.http.get(chatBotUrl, { responseType: 'text' }).pipe(
-      map((response) => ({ response })) 
-    );
+    return this.http
+      .get(chatBotUrl, { responseType: 'text' })
+      .pipe(map((response) => ({ response })));
+  }
+  getBalanceByUserId(): Observable<any> {
+    const url = `http://localhost:8070/utilisateurs/${this.getUserIdFromToken()}/balance`;
+    return this.http.get<any>(url);
   }
 }

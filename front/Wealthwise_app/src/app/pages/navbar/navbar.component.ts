@@ -30,7 +30,13 @@ export class NavbarComponent implements OnInit {
       label: 'Gestion de Budget',
       icon: 'fas fa-wallet',
     }, // 💰 Portefeuille pour budget
+
     { path: '/meetings', label: 'Historique', icon: 'fas fa-history' }, // ⏳ Horloge pour historique
+    {
+      path: '/main/compte-conjoint',
+      label: 'Compte Conjoint',
+      icon: 'fas fa-users',
+    },
     {
       path: '/main/infoperso',
       label: 'Informations Personnelles',

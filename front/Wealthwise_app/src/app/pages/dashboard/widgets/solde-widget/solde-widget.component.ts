@@ -9,27 +9,13 @@ import { AuthService } from '../../../../services/auth.service';
 })
 export class SoldeWidgetComponent {
   constructor(private authservice: AuthService) {}
-  solde: number =0;
+  solde: number = 0;
   comptes: any[] = [];
-
+  solde2: number = 0;
   totalSolde: number = 0;
   ngOnInit() {
-    this.authservice.getComptesByUserId().subscribe(
-      (data) => {
-        console.log('📥 Comptes récupérés :', data);
-        this.comptes = data;
-        this.calculerTotalSolde();
-      },
-      (error) => {
-        console.error('❌ Erreur lors de la récupération des comptes :', error);
-      }
-    );
-  }
-  calculerTotalSolde(): void {
-    this.totalSolde = this.comptes.reduce(
-      (acc, compte) => acc + (compte.balance || 0),
-      0
-    );
-    console.log('💰 Total des soldes :', this.totalSolde);
+    this.authservice.getBalanceByUserId().subscribe((data) => {
+      this.solde2 = data;
+    });
   }
 }
