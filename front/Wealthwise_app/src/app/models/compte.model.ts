@@ -1,4 +1,5 @@
 export interface Compte {
+  nom:string;
   id: number;
   externalId: string;
   institution: string;

@@ -26,6 +26,7 @@ export class InfopersoComponent implements OnInit {
   nouveauCompte = {
     utilisateur: { id: 0 },
     externalId: '',
+    nom: '',
     institution: '',
     iban: '',
     currency: 'EUR',
@@ -198,10 +199,12 @@ export class InfopersoComponent implements OnInit {
       this.nouveauCompte = {
         utilisateur: { id: 0 },
         externalId: '',
+        nom: '',
         institution: '',
         iban: '',
         currency: '',
         balance: 0
+
       };
     }
 

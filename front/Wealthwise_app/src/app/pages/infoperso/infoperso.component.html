@@ -32,6 +32,10 @@
             <p>{{ compte.institution }}</p>
           </div>
           <div class="info-row">
+            <label><i class="fas fa-money-check"></i> Nom :</label>
+            <p>{{ compte.nom }}</p>
+          </div>
+          <div class="info-row">
             <label><i class="fas fa-id-card"></i> ID Externe :</label>
             <p>{{ compte.externalId }}</p>
           </div>
@@ -65,6 +69,8 @@
         <form (ngSubmit)="ajouterCompteManuel()">
           <label for="externalId">ID Externe :</label>
           <input type="text" id="externalId" name="externalId" [(ngModel)]="nouveauCompte.externalId" required>
+          <label for="nom">Nom :</label>
+          <input type="text" id="nom" name="nom" [(ngModel)]="nouveauCompte.nom" required>
 
           <label for="institution">Institution :</label>
           <input type="text" id="institution" name="institution" [(ngModel)]="nouveauCompte.institution" required>

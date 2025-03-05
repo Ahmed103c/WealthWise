@@ -15,14 +15,14 @@ from dotenv import load_dotenv
 import getpass
 
 # Load the CSV data
-df = pd.read_csv("C:\\Users\\Rzeigui Ahmed\\Documents\\SP5\\Alae\\fastapisql\\personal_transaction.csv")
+df = pd.read_csv(".\\personal_transaction.csv")
 
 
 
 df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
 
 # Define and create the SQLite database
-db_path = "C:\\Users\\Rzeigui Ahmed\\Documents\\SP5\\Alae\\fastapisql\\sqldb_exp.db"
+db_path = ".\\sqldb_exp.db"
 db_path = f"sqlite:///{db_path}"
 engine = create_engine(db_path)
 df.to_sql("personal_transactions", engine, index=False, if_exists='replace')
