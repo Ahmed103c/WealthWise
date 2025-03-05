@@ -1,2 +1,10 @@
-<p>Vos différents transactions :</p>
-<canvas #chartMensuel></canvas>
+<p>Vos différentes transactions :</p>
+
+<div class="chart-controls">
+    <button (click)="prevMonths()" [disabled]="startIndex === 0">⬅️</button>
+    <button (click)="nextMonths()" [disabled]="startIndex >= totalMonths - 3">➡️</button>
+</div>
+
+<div class="chart-container">
+    <canvas #chartMensuel></canvas>
+</div>

@@ -1,0 +1,39 @@
+/* Conteneur des boutons pour les aligner à droite */
+.chart-controls {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Style des boutons */
+.chart-controls button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.chart-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.chart-controls button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Conteneur du graphique */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 40vh;
+  max-width: 1200px; /* La largeur maximale du graphique */
+  padding: 20px;
+  box-sizing: border-box; /* Prévient tout débordement si padding est ajouté */
+  margin: 0 auto; /* Centrage automatique */
+}
