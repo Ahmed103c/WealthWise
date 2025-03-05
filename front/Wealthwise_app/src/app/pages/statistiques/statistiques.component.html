@@ -1,1 +1,8 @@
 <p>statistiques works!</p>
+<div class="statistiques-widgets-container">
+    <div class="statistiques-widgets">
+            @for (w of store.widgets(); track w.id){
+            <app-widget [data]="w"> </app-widget>
+            }
+    </div>
+</div>

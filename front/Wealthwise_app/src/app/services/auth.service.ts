@@ -130,7 +130,7 @@ export class AuthService {
     console.log(this.http.get<any>(chatBotUrl));
 
     return this.http.get(chatBotUrl, { responseType: 'text' }).pipe(
-      map((response) => ({ response })) // Convertit en un objet JSON
+      map((response) => ({ response })) 
     );
   }
 }
