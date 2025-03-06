@@ -12,7 +12,7 @@ public class NotificationTestController {
     private final NotificationScheduler notificationScheduler;
 
     // 🔥 Tester les prélèvements à venir
-    @PostMapping("/prelevements")
+    /*@PostMapping("/prelevements")
     public String testPrelevements() {
         notificationScheduler.notifierPrelevementsAVenir();
         return "✅ Test des notifications de prélèvements exécuté !";
@@ -39,5 +39,5 @@ public class NotificationTestController {
         notificationScheduler.notifierDecouvertEtDepassementPart();
         return "✅ Test des notifications de découvert/dépassement de part exécuté !";
     }
-
+*/
 }

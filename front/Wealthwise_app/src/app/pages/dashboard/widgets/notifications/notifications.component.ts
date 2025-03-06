@@ -1,18 +1,32 @@
-import { Component } from '@angular/core';
-import { NotificationComponent } from './notification/notification.component';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../../../services/notifications.service';
 
 @Component({
-  selector: 'app-notifications',
-  imports: [NotificationComponent],
-  templateUrl: './notifications.component.html',
-  styleUrl: './notifications.component.scss',
+  selector: 'app-notification',
+  standalone: true,  // Déclare le composant comme standalone
+  imports: [CommonModule],  // Importe CommonModule pour accéder à ngIf, ngFor, etc.
+  template: `
+    <div *ngIf="notifications.length > 0">
+      <h3>Notifications</h3>
+      <ul>
+        <li *ngFor="let notif of notifications">
+          {{ notif.message }} <small>({{ notif.type }})</small>
+        </li>
+      </ul>
+    </div>
+  `,
+  styles: []
 })
-export class NotificationsComponent {
-  notifications = [
-    { id: 1, message: 'Votre compte a été vérifié' },
-    { id: 2, message: 'Vous avez un nouveau message' },
-    { id: 3, message: 'Nouvelle mise à jour disponible' },
-    { id: 4, message: 'Suspect de Fraude !' },
-    { id: 5, message: 'Nouvelle transcation' },
-  ];
+export class NotificationComponent implements OnInit {
+  notifications: any[] = [];
+
+  constructor(private notificationService: NotificationService) {}
+
+  ngOnInit(): void {
+    this.notificationService.getNotifications().subscribe(data => {
+      this.notifications = data;
+    });
+  }
 }
+

@@ -112,11 +112,13 @@ export class CompteConjointComponent implements OnInit {
 
   getComptesConjoints(): void {
     this.compteConjointService.getComptesConjoints(this.id).subscribe(accounts => {
-      this.comptesConjoints = accounts;
+      // Filtrer les comptes pour ne garder que ceux qui sont joints
+      this.comptesConjoints = accounts.filter(account => account.isConjoint);
     }, error => {
       console.error('Erreur lors de la récupération des comptes conjoints', error);
     });
   }
+  
 
   voirDetails(compte: any): void {
     this.selectedCompte = compte;

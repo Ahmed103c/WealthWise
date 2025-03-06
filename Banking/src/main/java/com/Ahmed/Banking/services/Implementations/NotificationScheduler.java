@@ -80,7 +80,7 @@ public class NotificationScheduler {
             }
         }
     }
-    //@Scheduled(cron = "0 0/5 * * * ?") // Exécution toutes les 5 minutes (à ajuster selon vos besoins)
+    @Scheduled(cron = "0 0/5 * * * ?") // Exécution toutes les 5 minutes (à ajuster selon vos besoins)
     public void notifierDecouvertEtDepassementPart() {
         // Récupérer tous les comptes
         List<Compte> comptes = compteRepository.findAll();

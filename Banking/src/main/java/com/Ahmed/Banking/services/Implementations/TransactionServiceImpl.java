@@ -1,6 +1,7 @@
 package com.Ahmed.Banking.services.Implementations;
 
 import com.Ahmed.Banking.models.*;
+import com.Ahmed.Banking.services.NotificationService;
 import com.Ahmed.repositories.*;
 
 import com.Ahmed.Banking.dto.TransactionDto;
@@ -31,6 +32,8 @@ public class TransactionServiceImpl implements TransactionService {
     private static final String SECRET_KEY = "b990a265d0ca0d005b235c7bf1da15cf534e9c2e8822ae51874a87afe4bbb5c8166b6389393a84a46ca69b21d5fc17f7be64e77f50f6e92ad0068cd41c79c95c"; // 🔥 Replace with real credentials
     private static final String SANDBOX_INSTITUTION_ID = "SANDBOXFINANCE_SFIN0000";
 
+
+
     private final TransactionRepository transactionRepository;
     private final CompteRepository compteRepository;
     private final PartCompteRepository partCompteRepository; // ✅ Ajout du repository
@@ -43,12 +46,13 @@ public class TransactionServiceImpl implements TransactionService {
     private final CategoryService categoryService; // ✅ Ajout du service de catégorisation
 
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository,
+    public TransactionServiceImpl(NotificationService notificationService, TransactionRepository transactionRepository,
                                   CompteRepository compteRepository, PartCompteRepository partCompteRepository,
                                   CategoryRepository categoryRepository,
                                   BudgetCategorieRepository budgetCategorieRepository,
                                   UtilisateurRepository utilisateurRepository,
                                   RestTemplate restTemplate, CategoryService categoryService) {
+
         this.transactionRepository = transactionRepository;
         this.compteRepository = compteRepository;
         this.partCompteRepository = partCompteRepository;
@@ -371,5 +375,7 @@ public class TransactionServiceImpl implements TransactionService {
             utilisateurRepository.save(utilisateur);
         }
     }
+
+
 
 }

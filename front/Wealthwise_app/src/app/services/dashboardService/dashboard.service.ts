@@ -7,7 +7,7 @@ import { GrowthWidgetComponent } from '../../pages/dashboard/widgets/growth-widg
 import { DepensePieChartComponent } from '../../pages/dashboard/widgets/depense-pie-chart/depense-pie-chart.component';
 import { GoalsComponent } from '../../pages/dashboard/widgets/goals/goals.component';
 import { DepenseGraphComponent } from '../../pages/dashboard/widgets/depense-graph/depense-graph.component';
-import { NotificationsComponent } from '../../pages/dashboard/widgets/notifications/notifications.component';
+import { NotificationComponent } from '../../pages/dashboard/widgets/notifications/notifications.component';
 import { AuthService } from '../auth.service';
 import { ChatbotComponent } from '../../pages/dashboard/widgets/chatbot/chatbot.component';
 
@@ -60,7 +60,7 @@ export class DashboardService {
     {
       id: 7,
       label: 'Notifications 🔔',
-      content: NotificationsComponent,
+      content: NotificationComponent,
       backgroundColor: '#eda8a1',
       color: 'whitesmoke',
     },

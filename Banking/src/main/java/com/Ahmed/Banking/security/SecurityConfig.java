@@ -94,38 +94,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         LOGGER.info("🔓 Security: Toutes les requêtes sont autorisées !");
-
         http
-                .csrf(csrf -> csrf.disable()) // 🔥 Désactiver la protection CSRF
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Activer CORS avec méthode corrigée
+                .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour une API REST
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Active CORS avec la configuration définie
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll() // ✅ Autoriser toutes les requêtes
+                        .requestMatchers("/**").permitAll() // Autoriser toutes les requêtes
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // ✅ API REST sans session
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Pas de session
 
         return http.build();
     }
 
-    /**
-     * ✅ Configure la gestion des CORS pour autoriser toutes les origines et toutes les méthodes HTTP.
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:4200")); // ✅ Autorise toutes les origines (Angular, Swagger, Mobile, etc.)
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // ✅ Autorise toutes les méthodes HTTP
-        config.setAllowedHeaders(List.of("*")); // ✅ Autorise tous les headers (JWT, Content-Type, etc.)
+        // Utilisez setAllowedOriginPatterns pour autoriser toutes les origines avec credentials
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 
-    /**
-     * ✅ Ajoute un filtre CORS global pour permettre les appels depuis Angular, Postman, Swagger, etc.
-     */
     @Bean
     public CorsFilter corsFilter() {
         return new CorsFilter(corsConfigurationSource());
