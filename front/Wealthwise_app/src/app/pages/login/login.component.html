@@ -1,42 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page de Connexion</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
 
-    <div class="container">
-        <div class="form-box login">
-            <form (submit)="onLogin()">
-                <h1>Login</h1>
-                <div class="input-box">
-                  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
-                  <i class='bx bxs-user'></i>
-                </div>
-                <div class="input-box">
-                  <input type="password" [(ngModel)]="password" name="password" placeholder="Mot de passe" required>
-                    <i class='bx bxs-lock'></i>
-                </div>
-                <div class="forgot-link">
-                    <a href="#">Forgot Password?</a>
-                </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
-          <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-        </div>
+<div class="container">
+  <div class="form-box login">
+    <form (submit)="onLogin()">
+      <h1>Connexion</h1>
+      <div class="input-box">
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required>
+        <i class='bx bxs-user'></i>
+      </div>
+      <div class="input-box">
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Mot de passe" required>
+        <i class='bx bxs-lock'></i>
+      </div>
+      <div class="forgot-link">
+        <a href="#">Mot de passe oublié ?</a>
+      </div>
+      <button type="submit" class="btn">Se connecter</button>
+    </form>
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </div>
 
-        <div class="overlay">
-            <div class="overlay-panel">
-                <h2>First Time?</h2>
-                <p>Don't have an account?</p>
-                <button class="btn" id="register-btn" (click)="goToRegister()">Register</button>
-            </div>
-        </div>
+  <div class="overlay">
+    <div class="logo">
+      <img src="assets/images/logo.jpg" alt="Logo WealthWise">
     </div>
+    <div class="overlay-panel">
+      <h2>Première visite ?</h2>
+      <p>Vous n'avez pas encore de compte ?</p>
+      <button class="btn" id="register-btn" (click)="goToRegister()">S'inscrire</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

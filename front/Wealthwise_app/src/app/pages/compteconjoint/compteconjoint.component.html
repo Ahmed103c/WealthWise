@@ -1,76 +1,80 @@
 <div class="info-page">
-    <div class="info-container">
-      <h2><i class="fas fa-users"></i> Joint Account Management</h2>
-  
-      <!-- CREATE NEW JOINT ACCOUNT -->
-      <div class="card">
-        <h3 class="account-title">Create a Joint Account</h3>
-        <form (ngSubmit)="creerCompteConjoint()">
-          <input type="text" name="nom" [(ngModel)]="nouveauCompte.nom" placeholder="Account Name" required>
-          <input type="text" name="institution" [(ngModel)]="nouveauCompte.institution" placeholder="Bank Institution" required>
-          <input type="text" name="iban" [(ngModel)]="nouveauCompte.iban" placeholder="IBAN" required>
-          <input type="number" name="balance" [(ngModel)]="nouveauCompte.balance" placeholder="Initial Balance (€)" required min="0">
-          <!-- Saisie des emails séparés par des virgules -->
-          <input type="text" name="emails" [(ngModel)]="nouveauCompte.emails" placeholder="Co-owners' Emails (comma-separated)" required>
-          <!-- Saisie des parts correspondant aux emails, séparées par des virgules -->
-          <input type="text" name="parts" [(ngModel)]="nouveauCompte.parts" placeholder="Parts (comma-separated)" required>
-          <button class="btn-primary" type="submit">
-            <i class="fas fa-plus"></i> Create Account
-          </button>
-        </form>
-      </div>
-  
-      <!-- DISPLAY ACCOUNTS AND DETAILS -->
-      <div class="content-container">
-        <div class="left-section">
-          <div class="card">
-            <h3 class="account-title">Your Joint Accounts</h3>
-            <div *ngFor="let compte of comptesConjoints">
-              <div class="info-row">
-                <span>{{ compte.nom }}</span>
-                <span>{{ compte.institution }}</span>
-                <span>{{ compte.balance | number:'1.2-2' }} €</span>
-                <button class="btn-primary" (click)="voirDetails(compte)">
-                  <i class="fas fa-eye"></i> View
-                </button>
-              </div>
-              <div class="account-divider"></div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- ACCOUNT DETAILS + CHARTS -->
-        <div class="right-section" *ngIf="selectedCompte">
-          <div class="card">
-            <h2><i class="fas fa-info-circle"></i> Account Details</h2>
-            <p><strong>Name:</strong> {{ selectedCompte.nom }}</p>
-            <p><strong>Institution:</strong> {{ selectedCompte.institution }}</p>
-            <p><strong>Balance:</strong> {{ selectedCompte.balance | number:'1.2-2' }} €</p>
-  
-            <!-- ADD USER (Only for Owner) -->
-            <div *ngIf="selectedCompte.proprietaireId === id">
-              <h3>Add a User</h3>
-              <input type="email" name="userEmail" [(ngModel)]="emailValue" placeholder="User Email" required>
-              <input type="number" name="userShare" [(ngModel)]="partValue" placeholder="Share (€)" required min="0">
-              <button class="btn-primary" (click)="ajouterUtilisateur()"
-                [disabled]="!emailValue || !partValue || partValue <= 0">
-                <i class="fas fa-user-plus"></i> Add
+  <div class="info-container">
+    <h2><i class="fas fa-users"></i> Joint Account Management</h2>
+
+    <!-- BOUTON POUR OUVRIR LE MODAL DE CRÉATION -->
+    <button class="btn-primary" (click)="ouvrirModalCreation()">
+      <i class="fas fa-plus-circle"></i> Ajouter un compte conjoint
+    </button>
+
+    <!-- LISTE DES COMPTES CONJOINTS -->
+    <div class="content-container">
+      <div class="left-section">
+        <div class="card">
+          <h3 class="account-title">Your Joint Accounts</h3>
+          <div *ngFor="let compte of comptesConjoints">
+            <div class="info-row">
+              <span>{{ compte.nom }}</span>
+              <span>{{ compte.institution }}</span>
+              <span>{{ compte.balance | number:'1.2-2' }} €</span>
+              <button class="btn-primary" (click)="voirDetails(compte)">
+                <i class="fas fa-eye"></i> View
               </button>
             </div>
+            <div class="account-divider"></div>
           </div>
-  
-          <!-- CHARTS -->
-          <div class="card">
-            <h2><i class="fas fa-chart-pie"></i> User Share Breakdown</h2>
-            <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
-          </div>
-  
-          <div class="card">
-            <h2><i class="fas fa-chart-line"></i> Balance Evolution</h2>
-            <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType"></canvas>
-          </div>
+        </div>
+      </div>
+
+      <!-- DÉTAILS DU COMPTE SELECTIONNÉ + CHARTS -->
+      <div class="right-section" *ngIf="selectedCompte">
+        <div class="card">
+          <h2><i class="fas fa-info-circle"></i> Account Details</h2>
+          <p><strong>Name:</strong> {{ selectedCompte.nom }}</p>
+          <p><strong>Institution:</strong> {{ selectedCompte.institution }}</p>
+          <p><strong>Balance:</strong> {{ selectedCompte.balance | number:'1.2-2' }} €</p>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="card">
+          <h2><i class="fas fa-chart-pie"></i> User Share Breakdown</h2>
+          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType"></canvas>
+        </div>
+        <div class="card">
+          <h2><i class="fas fa-chart-line"></i> Balance Evolution</h2>
+          <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType"></canvas>
         </div>
       </div>
     </div>
   </div>
-  
+</div>
+
+<!-- MODAL POUR CRÉER UN COMPTE CONJOINT -->
+<div *ngIf="modeCreation" class="modal2">
+  <div class="modal-content2">
+    <span class="close" (click)="fermerModalCreation()">&times;</span>
+    <h2>Créer un Compte Conjoint</h2>
+    <form (ngSubmit)="creerCompteConjoint()">
+      <label for="nom">Nom :</label>
+      <input type="text" id="nom" name="nom" [(ngModel)]="nouveauCompte.nom" required>
+
+      <label for="institution">Institution :</label>
+      <input type="text" id="institution" name="institution" [(ngModel)]="nouveauCompte.institution" required>
+
+      <label for="iban">IBAN :</label>
+      <input type="text" id="iban" name="iban" [(ngModel)]="nouveauCompte.iban" required>
+
+      <label for="balance">Solde :</label>
+      <input type="number" id="balance" name="balance" [(ngModel)]="nouveauCompte.balance" required>
+
+      <label for="emails">Co-owners' Emails :</label>
+      <input type="text" id="emails" name="emails" [(ngModel)]="nouveauCompte.emails" required>
+
+      <label for="parts">Parts (comma-separated) :</label>
+      <input type="text" id="parts" name="parts" [(ngModel)]="nouveauCompte.parts" required>
+
+      <button type="submit" class="btn-submit">Créer Compte</button>
+    </form>
+  </div>
+</div>
+

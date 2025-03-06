@@ -26,6 +26,7 @@ export class CompteConjointComponent implements OnInit {
     emails: '',  // Exemple: "user1@gmail.com, user2@gmail.com"
     parts: ''    // Exemple: "30,30" (correspond aux parts des co-owners)
   };
+  modeCreation: boolean = false;
 
   comptesConjoints: any[] = [];
   selectedCompte: any = null;
@@ -72,7 +73,7 @@ export class CompteConjointComponent implements OnInit {
       .split(',')
       .map(part => part.trim())
       .filter(part => part !== '');
-    
+
     // Vérifier que le nombre d'emails correspond au nombre de parts
     if (emailsArray.length !== partsArrayString.length) {
       console.error("Le nombre d'emails et de parts doit être identique.");
@@ -115,7 +116,7 @@ export class CompteConjointComponent implements OnInit {
       // Filtrer les comptes pour ne garder que ceux qui sont joints
       this.comptesConjoints = accounts.filter(account => account.isConjoint);
     }, error => {
-      console.error('Erreur lors de la récupération des comptes conjoints', error);
+      console.error('Erreur lors de la récupération des comptes conjoints', error);
     });
   }
   
@@ -150,5 +151,12 @@ export class CompteConjointComponent implements OnInit {
       };
     }
     // Ajoutez ici la logique pour le line chart, si nécessaire
+  }
+  ouvrirModalCreation() {
+    this.modeCreation = true;
+  }
+
+  fermerModalCreation() {
+    this.modeCreation = false;
   }
 }
