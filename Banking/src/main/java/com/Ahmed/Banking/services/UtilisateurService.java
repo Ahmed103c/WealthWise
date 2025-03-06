@@ -12,6 +12,4 @@ public interface UtilisateurService extends AbstractService<UtilisateurDto>{
     public UtilisateurDto findByMail(String email);
     List<Compte> getComptesByUserId(Integer idUtilisateur);
     public BigDecimal getBalanceById(Integer id);
-
-
 }

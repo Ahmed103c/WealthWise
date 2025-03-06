@@ -1,176 +1,177 @@
-/* ✅ PAGE PRINCIPALE */
-.info-page {
-  margin-left: 200px; /* Laisse la place pour la sidebar */
-  margin-top: 70px; /* Laisse la place pour la navbar */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #ffe3d8, #e3b6b1);
-  color: #150016; /* Texte sombre pour une bonne lisibilité */
-}
 
-/* ✅ CONTENEUR PRINCIPAL */
-.info-container {
-  width: 90%;
-  max-width: 900px;
-}
+  $color-darkest: #150016;
+  $color-dark: #29104A;
+  $color-medium-dark: #3E1B3B;
+  $color-medium: #70445D;
+  $color-light: #D7A3A7;
+  $color-lightest: #FCE8E0;
 
-/* ✅ TITRE PRINCIPAL */
-h2 {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #150016;
-}
+  $border-radius: 14px;
+  $box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.25);
+  $spacing: 20px;
 
-h2 i {
-  margin-right: 10px;
-  background: linear-gradient(to right, #522c5d, #845162);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+  .info-page {
+    margin-left: 200px; /* Laisse la place pour la sidebar */
+    margin-top: 70px; /* Laisse la place pour la navbar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, $color-darkest, $color-dark);
+    color: $color-lightest;
+    font-family: "Arial", sans-serif;
+    padding: 20px;
 
-/* ✅ STYLE DES CARTES AVEC DÉGRADÉ */
-.card {
-  background: linear-gradient(135deg, #e3b6b1, #ffe3d8); /* Dégradé léger */
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  text-align: left;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
+    .info-container {
+      width: 90%;
+      max-width: 1100px;
+      padding: $spacing;
+      background: linear-gradient(to bottom, $color-medium-dark, $color-medium);
+      border-radius: $border-radius;
+      box-shadow: $box-shadow;
 
-/* ✅ TITRES DES COMPTES */
-.account-title {
-  font-size: 20px;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 10px;
-  text-align: center;
-  border-radius: 8px;
-  background: linear-gradient(to right, #522c5d, #845162);
-  color: #ffe3d8;
-  display: inline-block;
-  width: 100%;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  letter-spacing: 1px;
-}
+      h2 {
+        text-align: center;
+        color: $color-lightest;
+        margin-bottom: $spacing;
+      }
 
-/* ✅ LIGNES D'INFORMATIONS */
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  color: #150016;
-}
+      .btn-primary {
+        background: linear-gradient(to right, $color-light, $color-lightest);
+        color: $color-darkest;
+        border: none;
+        padding: 12px 25px;
+        border-radius: $border-radius;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        font-weight: bold;
+        display: block;
+        margin: auto;
+        text-align: center;
 
-.info-row span {
-  flex: 1;
-}
+        &:hover {
+          background: linear-gradient(to right, $color-lightest, $color-light);
+          transform: scale(1.05);
+        }
+      }
 
-/* ✅ BOUTON PRINCIPAL AVEC DÉGRADÉ */
-.btn-primary {
-  background: linear-gradient(to right, #522c5d, #845162);
-  color: white;
-  padding: 12px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  transition: 0.3s;
-  margin-top: 10px;
-}
+      .content-container {
+        display: flex;
+        gap: $spacing;
+        margin-top: $spacing;
 
-.btn-primary:hover {
-  background: linear-gradient(to right, #845162, #e3b6b1);
-}
+        .left-section, .right-section {
+          flex: 1;
+        }
 
-.btn-primary i {
-  margin-right: 8px;
-}
+        .card {
+          background: linear-gradient(to bottom, $color-medium, $color-light);
+          padding: $spacing;
+          border-radius: $border-radius;
+          box-shadow: $box-shadow;
+          margin-bottom: $spacing;
 
-/* ✅ SEPARATEUR ENTRE LES COMPTES */
-.account-divider {
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(to right, #522c5d, #845162);
-  border-radius: 5px;
-  margin: 20px 0; /* Espace avant et après */
-  opacity: 0.8;
-}
+          h3 {
+            color: $color-darkest;
+            margin-bottom: 10px;
+          }
 
-/* ✅ STYLE DES FORMULAIRES */
-form input {
-  padding: 12px;
-  border: 1px solid #845162;
-  border-radius: 5px;
-  width: 100%;
-  margin-bottom: 15px;
-  background: white;
-  color: #150016;
-}
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 
-form input::placeholder {
-  color: #a3a3a3;
-}
+            span {
+              flex: 1;
+              text-align: center;
+              font-weight: bold;
+              color: $color-darkest;
+            }
 
-/* ✅ STYLE DES BOUTONS DANS LE FORMULAIRE */
-form button {
-  background: linear-gradient(to right, #522c5d, #845162);
-  color: #ffe3d8;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+            button {
+              background: linear-gradient(to right, $color-light, $color-lightest);
+              color: $color-darkest;
+              border: none;
+              padding: 6px 12px;
+              border-radius: $border-radius;
+              cursor: pointer;
+              transition: background 0.3s ease;
 
-form button:hover {
-  background: linear-gradient(to right, #845162, #e3b6b1);
-}
-
-/* ✅ STYLE DE LA SECTION DROITE AVEC LES GRAPHIQUES */
-.right-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.right-section canvas {
-  border-radius: 12px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* ✅ STYLE DE LA MODALE AVEC EFFET TRANSPARENT */
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3); /* Arrière-plan légèrement assombri */
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* ✅ ANIMATIONS */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+              &:hover {
+                background: linear-gradient(to right, $color-lightest, $color-light);
+              }
+            }
+          }
+        }
+      }
+    }
   }
-  to {
-    opacity: 1;
+
+  // 🎨 Style général des modales
+  .modal, .modal2 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    padding: 25px;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    text-align: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
   }
-}
+
+  // 🟣 Modale 1 - Design légèrement différent pour la différencier
+  .modal {
+    background: linear-gradient(160deg, $color-lightest, $color-light);
+  }
+
+  // 🔵 Modale 2 - Création d'un compte conjoint
+  .modal2 {
+    background: linear-gradient(160deg, $color-medium, $color-lightest);
+  }
+
+  .modal-content, .modal-content2 {
+    h2 {
+      color: $color-darkest;
+      margin-bottom: 15px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: $border-radius;
+      border: none;
+      font-size: 16px;
+    }
+
+    .btn-submit {
+      background: linear-gradient(to right, $color-dark, $color-medium-dark);
+      color: $color-lightest;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease, transform 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(to right, $color-medium-dark, $color-dark);
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  // Ajoute un fond semi-transparent derrière les modales
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+

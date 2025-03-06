@@ -117,6 +117,7 @@ html, body {
   color: #FFE3D8;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   border-radius: 30px 0 0 30px;
   transition: 0.5s;
@@ -124,6 +125,29 @@ html, body {
 
 .overlay-panel {
   text-align: center;
+}
+.overlay .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Effet de bordure transparente et flou doux */
+.overlay .logo img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 10px; /* Arrondi des bords */
+  border: 5px solid #522C5D; /* Bordure semi-transparente */
+  backdrop-filter: blur(5px); /* Effet de flou doux */
+  padding: 5px; /* Espacement intérieur pour l'effet */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Effet de survol pour plus d'élégance */
+.overlay .logo img:hover {
+  transform: scale(1.1); /* Légère augmentation de la taille */
+  opacity: 0.9; /* Légère transparence */
 }
 
 .overlay .btn {
