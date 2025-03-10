@@ -30,7 +30,7 @@ L'application repose sur une architecture full-stack combinant Spring Boot pour 
 - Node.js 18+
 - PostgreSQL
 - Angular CLI
-- Docker (optionnel)
+
 
 ### Installation du Backend
 1. Cloner le dépôt :
@@ -65,11 +65,7 @@ L'application repose sur une architecture full-stack combinant Spring Boot pour 
 - Consultation des analyses financières et gestion du budget.
 - Utilisation du chatbot pour obtenir des insights financiers.
 
-## Déploiement
-Pour un déploiement avec Docker :
-```bash
-docker-compose up --build
-```
+
 
 ## Contributions
 Les contributions sont les bienvenues ! Merci de créer une issue ou une pull request avec vos améliorations.
